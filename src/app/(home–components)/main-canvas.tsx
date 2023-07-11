@@ -3,9 +3,11 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Box } from './box'
 import { RoomModel } from './room'
-import { useEffect, useRef } from 'react'
+import { MouseEventHandler, useCallback, useEffect, useRef } from 'react'
 import { useContainerDimensions } from '@/app/(hooks)/use-resize-observer'
 import { Euler, OrthographicCamera, Vector3 } from 'three'
+import { SunlightSource } from '@/app/(home–components)/lights'
+import { useSpring, config } from '@react-spring/three'
 // 
 // const orthographicCamera = new OrthographicCamera(-1, 1, 3.5 / 2, -3.5 / 2);
 
@@ -18,9 +20,11 @@ const createOrthographicCamera = (aspectRatio: number) => {
   return orthographicCamera;
 }
 
-export const MainCanvas = () => {
-  // Write code to get the aspect ratio of the container.
 
+const calcRotation = (clientX: number) => ((clientX - window.innerWidth / 2) * 0.2) / window.innerWidth;
+const interpolateRotation = (rotateY: number) => [0, rotateY, 0] as const;
+
+export const MainCanvas = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { aspectRatio } = useContainerDimensions(containerRef);
   const orthographicCamera = useRef(createOrthographicCamera(aspectRatio));
@@ -30,13 +34,27 @@ export const MainCanvas = () => {
     orthographicCamera.current.right = (aspectRatio * 3.5) / 2;
   }, [aspectRatio])
 
+  const [props, set] = useSpring(() => ({
+    rotateY: 0,
+    config: config.default
+  }))
+
+  // TODO: Make this calc relative to the container not the window
+  const onMouseMove = useCallback<MouseEventHandler<HTMLDivElement>>(({ clientX, clientY }) => {
+    const rotation = calcRotation(clientX);
+    set({ rotateY: rotation })
+  }, [set]);
+
+
   return (
-    <div ref={containerRef} className='w-full h-full' onClick={() => console.log(orthographicCamera)}>
-      <Canvas camera={orthographicCamera.current} >
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
-        <RoomModel position={[-1, 0, 0]} />
+    <div ref={containerRef} className='w-full h-full' onMouseMove={onMouseMove}>
+      <Canvas camera={orthographicCamera.current}>
+        <SunlightSource />
+        <ambientLight intensity={0} />
+        <RoomModel
+          rotation={props.rotateY.to(interpolateRotation) as unknown as [number, number, number]}
+          position={[-1, 0, 0]}
+        />
         {/* <OrbitControls /> */}
       </Canvas>
     </div>
