@@ -25,5 +25,8 @@
     "tailwindcss": "3.3.2",
     "three": "^0.154.0",
     "typescript": "5.1.6"
+  },
+  "devDependencies": {
+    "@types/resize-observer-browser": "^0.1.7"
   }
 }
