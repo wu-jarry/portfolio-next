@@ -17,8 +17,13 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
 
 
   return (
-    <animated.group ref={group} {...props} dispose={null}  >
-      <group name="Scene">
+    <animated.group
+      ref={group}
+      {...props}
+      dispose={null}
+    >
+      <group name="Scene"
+      >
         <group
           name="Body"
           position={[-2.127, 9.082, -5.622]}
@@ -41,6 +46,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Ceiling_lamp"
+          castShadow
+          receiveShadow
           position={[0.28, 13.279, 2.764]}
           rotation={[-Math.PI, 0.785, -Math.PI]}
         >
@@ -61,6 +68,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="WelcomeSign"
+          castShadow
+          receiveShadow
           position={[-7.709, 1.031, 9.814]}
           rotation={[-Math.PI, 1.145, -Math.PI]}
           scale={[-0.01, -0.275, -0.01]}
@@ -84,6 +93,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           name="Floor_items"
           position={[-7.234, 2.336, 3.338]}
           rotation={[0, -0.785, 0]}
+          castShadow
+          receiveShadow
         >
           <mesh
             name="Cube011"
@@ -116,6 +127,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Computer"
+          castShadow
+          receiveShadow
           position={[-7.014, 5.176, -0.182]}
           rotation={[0, -0.785, 0]}
         >
@@ -136,6 +149,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Acquarium"
+          castShadow
+          receiveShadow
           position={[6.983, 2.31, 1.175]}
           rotation={[0, -0.785, 0]}
         >
@@ -236,6 +251,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         />
         <group
           name="Mini_floor"
+          castShadow
+          receiveShadow
           position={[-6.21, 0.874, 13.793]}
           rotation={[0, -0.785, 0]}
         >
@@ -255,6 +272,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           />
         </group>
         <group
+          castShadow
+          receiveShadow
           name="Mailbox"
           position={[-3.641, 1.002, 12.928]}
           rotation={[-Math.PI, 0.785, -Math.PI]}
@@ -283,6 +302,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Lamp"
+          castShadow
+          receiveShadow
           position={[-6.472, 1.001, 8.595]}
           rotation={[-Math.PI, 0.785, -Math.PI]}
         >
@@ -305,6 +326,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           name="Table_stuff"
           position={[-0.344, 4.382, -4.149]}
           rotation={[-1.3, 0.172, -1.026]}
+          castShadow
+          receiveShadow
         >
           <mesh
             name="Cube062"
@@ -474,6 +497,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           />
         </group>
         <group
+          castShadow
+          receiveShadow
           name="Table_items"
           position={[0.204, 2.599, 4.338]}
           rotation={[Math.PI, -0.108, Math.PI]}
@@ -518,6 +543,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           name="Shelves"
           position={[2.991, 9.094, -5.01]}
           rotation={[2.731, 0.742, -2.856]}
+          castShadow
+          receiveShadow
         >
           <mesh
             name="Cube116"
@@ -629,6 +656,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         />
         <group
           name="Clock"
+          castShadow
+          receiveShadow
           position={[8.554, 13.027, 0.398]}
           rotation={[-Math.PI / 2, 0, 2.357]}
         >
@@ -652,6 +681,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           position={[0.22, 1.116, -10.089]}
           rotation={[Math.PI, -0.763, Math.PI]}
           scale={0.469}
+          castShadow
+          receiveShadow
         >
           <mesh
             name="Cube256"
