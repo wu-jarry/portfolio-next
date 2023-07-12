@@ -1,7 +1,8 @@
 "use client"
 import { useHelper } from '@react-three/drei';
+import { dir } from 'console';
 import { useRef } from 'react';
-import { CameraHelper, DirectionalLight, OrthographicCamera } from 'three'
+import { CameraHelper, DirectionalLight, OrthographicCamera, DirectionalLightHelper } from 'three'
 
 // const createSunlightSource = () => {
 //     const sunLight = new DirectionalLight(0xffffff, 3);
@@ -17,11 +18,14 @@ import { CameraHelper, DirectionalLight, OrthographicCamera } from 'three'
 // }
 
 export const SunlightSource = () => {
+    // const dirLight = useRef<DirectionalLight>(null!);
+    // useHelper(dirLight, DirectionalLightHelper, 1, "red");
+
     return (
         <>
 
-            <directionalLight  color={0xffffff} intensity={3} castShadow shadow-mapSize={[2048, 2048]}  position={[-1.5, 7, 3]}>
-                <orthographicCamera  />
+            <directionalLight color={0xffffff} intensity={3} castShadow shadow-mapSize={[2048, 2048]} position={[-1.5, 7, 3]}>
+                <orthographicCamera />
             </directionalLight>
         </>
 

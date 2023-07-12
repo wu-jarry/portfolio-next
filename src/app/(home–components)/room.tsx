@@ -28,6 +28,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           name="Body"
           position={[-2.127, 9.082, -5.622]}
           rotation={[0, -0.785, -Math.PI / 2]}
+          castShadow
+          receiveShadow
         >
           <mesh
             name="Plane"
@@ -451,6 +453,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Desks"
+          castShadow
+          receiveShadow
           position={[0.282, 2.605, -4.071]}
           rotation={[-Math.PI, 0.785, -Math.PI]}
         >
@@ -478,6 +482,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="TableOne"
+          castShadow
+          receiveShadow
           position={[0.875, 1.457, 5.588]}
           rotation={[2.787, 0.176, -3.08]}
         >
@@ -497,9 +503,9 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           />
         </group>
         <group
+          name="Table_items"
           castShadow
           receiveShadow
-          name="Table_items"
           position={[0.204, 2.599, 4.338]}
           rotation={[Math.PI, -0.108, Math.PI]}
         >
@@ -541,10 +547,10 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Shelves"
-          position={[2.991, 9.094, -5.01]}
-          rotation={[2.731, 0.742, -2.856]}
           castShadow
           receiveShadow
+          position={[2.991, 9.094, -5.01]}
+          rotation={[2.731, 0.742, -2.856]}
         >
           <mesh
             name="Cube116"

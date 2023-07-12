@@ -19,8 +19,10 @@ const createOrthographicCamera = (aspectRatio: number) => {
   orthographicCamera.translateY(3);
   orthographicCamera.translateZ(5);
   orthographicCamera.zoom = 20;
+  orthographicCamera.castShadow = false;
   return orthographicCamera;
 }
+
 
 
 const calcRotation = (clientX: number) => ((clientX - window.innerWidth / 2) * 0.2) / window.innerWidth;
@@ -50,14 +52,14 @@ export const MainCanvas = () => {
 
   return (
     <div ref={containerRef} className='w-full h-full' onMouseMove={onMouseMove}>
-      <Canvas  shadows camera={orthographicCamera.current} >
+      <Canvas shadows camera={orthographicCamera.current} >
         {/* <Stage preset="rembrandt" intensity={0.6} environment="city" > */}
 
         <SunlightSource/>
-          {/* <ambientLight intensity={0.5} castShadow /> */}
+          <ambientLight intensity={0.5}/>
           <RoomModel
-            position={[-1, 0, 0]}
-
+            position={[0, 0, 0]}
+            scale={[0.11, 0.11, 0.11]}
           />
         {/* </Stage> */}
         <OrbitControls ref={orbitControlsRef}/>
