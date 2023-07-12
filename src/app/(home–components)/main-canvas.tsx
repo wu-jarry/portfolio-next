@@ -46,7 +46,7 @@ export const MainCanvas = () => {
         <ambientLight intensity={0.1} />
         <SunlightSource />
         <RoomModel rotation={props.rotateY.to(interpolateRotation) as unknown as [number, number, number]} position={[0, -5, 0]} />
-        {/* <OrbitControls ref={orbitControlsRef} /> */}
+        <OrbitControls ref={orbitControlsRef} />
       </Canvas>
     </div>
   )
