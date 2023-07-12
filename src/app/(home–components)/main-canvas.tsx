@@ -5,7 +5,7 @@ import { Box } from './box'
 import { RoomModel } from './room'
 import { MouseEventHandler, useCallback, useEffect, useRef } from 'react'
 import { useContainerDimensions } from '@/app/(hooks)/use-resize-observer'
-import { Euler, OrthographicCamera, Vector3 } from 'three'
+import { AmbientLight, Euler, OrthographicCamera, Vector3 } from 'three'
 import { SunlightSource } from '@/app/(home–components)/lights'
 import { useSpring, config } from '@react-spring/three'
 // 
@@ -41,10 +41,11 @@ export const MainCanvas = () => {
           args={[(-aspectRatio * 3.5) / 2, (aspectRatio * 3.5) / 2, 3.5 / 2, -3.5 / 2, -50, 50]}
           rotation={cameraRotation}
           zoom={20}
-          position={[0, 10, 5]}
+          position={[0, 5, 5]}
         />
+        <ambientLight intensity={0.1} />
         <SunlightSource />
-        <RoomModel rotation={props.rotateY.to(interpolateRotation) as unknown as [number, number, number]} position={[-1, 0, 0]} />
+        <RoomModel rotation={props.rotateY.to(interpolateRotation) as unknown as [number, number, number]} position={[0, -5, 0]} />
         {/* <OrbitControls ref={orbitControlsRef} /> */}
       </Canvas>
     </div>
