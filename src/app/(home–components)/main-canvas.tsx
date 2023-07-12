@@ -9,7 +9,7 @@ import { Euler, OrthographicCamera, Vector3 } from 'three'
 import { SunlightSource } from '@/app/(home–components)/lights'
 import { useSpring, config } from '@react-spring/three'
 // 
-import {  Stage } from '@react-three/drei'
+import { Stage } from '@react-three/drei'
 
 // const orthographicCamera = new OrthographicCamera(-1, 1, 3.5 / 2, -3.5 / 2);
 
@@ -50,17 +50,10 @@ export const MainCanvas = () => {
 
   return (
     <div ref={containerRef} className='w-full h-full' onMouseMove={onMouseMove}>
-      <Canvas  shadows camera={orthographicCamera.current} >
-        {/* <Stage preset="rembrandt" intensity={0.6} environment="city" > */}
-
-        <SunlightSource/>
-          {/* <ambientLight intensity={0.5} castShadow /> */}
-          <RoomModel
-            position={[-1, 0, 0]}
-
-          />
-        {/* </Stage> */}
-        <OrbitControls ref={orbitControlsRef}/>
+      <Canvas shadows camera={orthographicCamera.current} >
+        <SunlightSource />
+        <RoomModel rotation={props.rotateY.to(interpolateRotation) as unknown as [number, number, number]} position={[-1, 0, 0]} />
+        {/* <OrbitControls ref={orbitControlsRef} /> */}
       </Canvas>
     </div>
   )
