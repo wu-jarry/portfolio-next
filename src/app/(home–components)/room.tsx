@@ -175,19 +175,26 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
   //   mixer.update(delta);
   // });
 
+  // const cameraRef = useRef();
+  // useHelper(cameraRef, CameraHelper)
+
   return (
     <animated.group
       ref={group}
       {...props}
       dispose={null}
     >
-      <pointLight shadow-normalBias={0.05} color={0xFFE664} intensity={1} position={[0.28, 13.279, 2.764]} castShadow />
+      <pointLight shadow-normalBias={0.05} color={0xFFE664} intensity={1} position={[0.28, 13.279, 2.764]} castShadow >
+        <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={1000} />
+      </pointLight>
       <group name="Scene"
       >
         <group
           name="Body"
           position={[-2.127, 9.082, -5.622]}
           rotation={[0, -0.785, -Math.PI / 2]}
+          castShadow
+          receiveShadow
         >
           <mesh
             name="Plane"
@@ -629,6 +636,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Desks"
+          castShadow
+          receiveShadow
           position={[0.282, 2.605, -4.071]}
           rotation={[-Math.PI, 0.785, -Math.PI]}
         >
@@ -656,6 +665,8 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="TableOne"
+          castShadow
+          receiveShadow
           position={[0.875, 1.457, 5.588]}
           rotation={[2.787, 0.176, -3.08]}
         >
@@ -675,9 +686,9 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
           />
         </group>
         <group
+          name="Table_items"
           castShadow
           receiveShadow
-          name="Table_items"
           position={[0.204, 2.599, 4.338]}
           rotation={[Math.PI, -0.108, Math.PI]}
         >
@@ -719,10 +730,10 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
         </group>
         <group
           name="Shelves"
-          position={[2.991, 9.094, -5.01]}
-          rotation={[2.731, 0.742, -2.856]}
           castShadow
           receiveShadow
+          position={[2.991, 9.094, -5.01]}
+          rotation={[2.731, 0.742, -2.856]}
         >
           <mesh
             name="Cube116"

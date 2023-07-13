@@ -1,5 +1,6 @@
 "use client"
 import { useHelper } from '@react-three/drei';
+import { dir } from 'console';
 import { useRef } from 'react';
 import { CameraHelper, DirectionalLight, DirectionalLightHelper, OrthographicCamera } from 'three'
 import { useShadowHelper } from '../(hooks)/use-camera-shadow-helper';

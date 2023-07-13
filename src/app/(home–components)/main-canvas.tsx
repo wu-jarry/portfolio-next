@@ -14,6 +14,7 @@ import { Stage } from '@react-three/drei'
 
 const cameraRotation = new Euler(-Math.PI / 6)
 
+
 const calcRotation = (clientX: number) => ((clientX - window.innerWidth / 2) * 0.2) / window.innerWidth;
 const interpolateRotation = (rotateY: number) => [0, rotateY, 0] as const;
 
@@ -51,3 +52,4 @@ export const MainCanvas = () => {
     </div>
   )
 }
+
