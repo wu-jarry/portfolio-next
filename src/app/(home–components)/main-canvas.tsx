@@ -2,11 +2,11 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera as OrthographicCameraComponent } from '@react-three/drei'
 import { Box } from './box'
-import { RoomModel } from './room2'
+import { RoomModel } from './(room)/room'
 import { MouseEventHandler, useCallback, useEffect, useRef } from 'react'
 import { useContainerDimensions } from '@/app/(hooks)/use-resize-observer'
 import { AmbientLight, DirectionalLight, Euler, OrthographicCamera, Vector3 } from 'three'
-import { SunlightSource, LampLightSource } from '@/app/(home–components)/lights'
+import { SunlightSource, LampLightSource } from '@/app/(home–components)/(room)/lights'
 import { setFloor } from '@/app/(home–components)/floor'
 import { useSpring, config } from '@react-spring/three'
 // 
@@ -46,9 +46,8 @@ export const MainCanvas = () => {
           zoom={250}
           position={[0, 2.4, 5]}
         />
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.1} />
         {/* <SunlightSource /> */}
-        <LampLightSource/>
         <RoomModel rotation={props.rotateY.to(interpolateRotation) as unknown as [number, number, number]} position={[-0.1, -0.7, 0]} scale={[0.11, 0.11, 0.11]}/>
         <OrbitControls ref={orbitControlsRef} />
       </Canvas>

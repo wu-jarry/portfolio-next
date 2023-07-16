@@ -1,9 +1,11 @@
 "use client"
 import { useHelper } from '@react-three/drei';
 import { dir } from 'console';
-import { use, useRef } from 'react';
+import { ComponentProps, use, useRef } from 'react';
 import { CameraHelper, DirectionalLight, DirectionalLightHelper, Object3D, OrthographicCamera, PointLight, PointLightHelper } from 'three'
-import { useShadowHelper } from '../(hooks)/use-camera-shadow-helper';
+import { useShadowHelper } from '../../(hooks)/use-camera-shadow-helper';
+import { useSpring, animated, config, AnimatedComponent } from '@react-spring/three'
+
 
 export const SunlightSource = () => {
     const light2 = useRef<DirectionalLight>(new DirectionalLight());
@@ -16,13 +18,13 @@ export const SunlightSource = () => {
     )
 };
 
-export const LampLightSource = () => {
+export const LampLightSource = (lightProps: ComponentProps<typeof animated.pointLight>) => {
     const light1 = useRef<PointLight>(null!);
     // useHelper(light1, PointLightHelper, 0.2, 'hotpink');
 
-    return(
-        <pointLight ref={light1} shadow-normalBias={0.05} color={0xFFE664} intensity={1} position={[1.25, 8.25, 4.25]} castShadow shadow-mapSize={[4096, 4096]}>
+    return (
+        <animated.pointLight {...lightProps} ref={light1} shadow-normalBias={0.05} color={0xFFE664} castShadow shadow-mapSize={[4096, 4096]}>
             <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={1000} />
-        </pointLight>
+        </animated.pointLight>
     )
 };

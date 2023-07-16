@@ -7,10 +7,10 @@ import { CameraHelper, DirectionalLight, DirectionalLightHelper, Object3D, Ortho
 import { useShadowHelper } from '../(hooks)/use-camera-shadow-helper';
 
 export const setFloor = () => {
-    const geometry = new THREE.PlaneGeometry( 100, 100 );
-    const material = new THREE.MeshStandardMaterial( {color: 0x8395CD, side: THREE.BackSide} );
+    const geometry = new THREE.PlaneGeometry(100, 100);
+    const material = new THREE.MeshStandardMaterial({ color: 0x8395CD, side: THREE.BackSide });
 
     return (
-        <mesh geometry={geometry} material={material} position={[0, -0.8, 0]}rotation={[Math.PI/2, 0, 0]} receiveShadow/>
+        <mesh geometry={geometry} material={material} position={[0, -0.8, 0]} rotation={[Math.PI / 2, 0, 0]} />
     )
 }
