@@ -14,6 +14,7 @@ import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHel
 import { GLTF } from "three-stdlib";
 import { LampLightSource } from "./lights";
 import { timeStamp } from "console";
+import { AnimationStates } from "../main-canvas";
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -178,11 +179,6 @@ type GLTFResult = GLTF & {
     };
 };
 
-enum AnimationStates {
-    START = 0,
-    BOX_OFF,
-    LIGHTS_ON,
-}
 
 function VideoMaterial({ url, ...props }: { url: string } & MeshBasicMaterialProps) {
     // https://codesandbox.io/s/video-texture-39hg8?file=/src/App.js:512-650
@@ -194,11 +190,15 @@ function VideoMaterial({ url, ...props }: { url: string } & MeshBasicMaterialPro
 
 const interpolateBoxPosition = (translateY: number) => [0.875, 7.8 + translateY, 3.613] as const;
 
-export function RoomModel(props: ComponentProps<typeof animated.group>) {
+
+type RoomModelProps = ComponentProps<typeof animated.group> & {
+    animationState: AnimationStates;
+    progressAnimationState: (state?: AnimationStates) => void;
+}
+export function RoomModel({ animationState, progressAnimationState, ...props }: RoomModelProps) {
     const group = useRef<Group>(null);
     const { nodes, materials, animations } = useGLTF("/models/website.glb") as GLTFResult;
     const { actions } = useAnimations(animations, group);
-    const [animationState, setAnimationState] = useState(AnimationStates.START);
 
     const [boxTranslateSpringProps, setboxTranslateSpringProps] = useSpring(() => ({
         boxTranslateY: (animationState >= AnimationStates.BOX_OFF) ? 100 : 0,
@@ -208,17 +208,13 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
     }), [animationState]);
 
     const [lightOnSpringProps] = useSpring(() => ({
-        boxTranslateY: (animationState >= AnimationStates.LIGHTS_ON) ? 1 : 0,
+        lightIntensity: (animationState >= AnimationStates.LIGHTS_ON) ? 1 : 0,
         config: {
-            duration: 700
+            duration: 400
         }
     }), [animationState]);
 
 
-    const progressAnimation = useCallback(() => {
-        // TODO: Implement animation buffering
-        setAnimationState(animationState + 1)
-    }, [animationState]);
 
     useEffect(() => {
         if (actions.FishAction) {
@@ -231,7 +227,6 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
             ref={group}
             {...props}
             dispose={null}
-            onClick={progressAnimation}
         >
             <group name="Scene">
                 <>
@@ -262,13 +257,26 @@ export function RoomModel(props: ComponentProps<typeof animated.group>) {
                         position={[0.875, 13.279, 3.613]}
                         rotation={[-Math.PI, 0.785, -Math.PI]}
                     >
-                        <LampLightSource intensity={lightOnSpringProps.boxTranslateY} />
+                        <LampLightSource intensity={lightOnSpringProps.lightIntensity} />
 
                         <mesh
                             name="Sphere"
                             geometry={nodes.Sphere.geometry}
-                            material={materials["Ceiling light"]}
-                        />
+                        // material={materials["Wall 2"]}
+
+                        >
+                            {/* 
+                        // @ts-ignore */}
+                            <animated.meshStandardMaterial
+                                attach="material"
+                                color={0xffffff}
+                                emissive={0xffffff}
+                                emissiveIntensity={lightOnSpringProps.lightIntensity}
+                                metalness={0}
+                                roughness={0.5}
+                                opacity={1}
+                            />
+                        </mesh>
                         <mesh
                             name="Sphere_1"
                             geometry={nodes.Sphere_1.geometry}
