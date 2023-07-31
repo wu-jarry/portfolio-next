@@ -2,7 +2,7 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera as OrthographicCameraComponent } from '@react-three/drei'
 import { Box } from './box'
-import { RoomModel } from './(room)/room'
+import { RoomModel } from './(room)/room3'
 import { MouseEventHandler, useCallback, useEffect, useRef, useState } from 'react'
 import { useContainerDimensions } from '@/app/(hooks)/use-resize-observer'
 import { AmbientLight, DirectionalLight, Euler, OrthographicCamera, Vector3 } from 'three'
@@ -66,7 +66,7 @@ export const MainCanvas = () => {
 
         />
         <ambientLight intensity={0.1} />
-        {/* <SunlightSource /> */}
+        <SunlightSource />
         <RoomModel
           {...{ animationState, progressAnimationState }}
           onClick={progressAnimationState}
