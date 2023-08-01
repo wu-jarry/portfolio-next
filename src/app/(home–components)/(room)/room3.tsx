@@ -940,7 +940,7 @@ console.log(actions)
           position={[3.075, 31.017, 11.046]}
           scale={0}
         />
-        <group name="Mailbox" position={[5.322, 1.002, 10.081]} scale={0}>
+        <group name="Mailbox" position={[5.322, 1.002, 10.081]} scale={0} rotation={[0, -Math.PI, 0]}>
           <mesh
             name="Cylinder021"
             castShadow
