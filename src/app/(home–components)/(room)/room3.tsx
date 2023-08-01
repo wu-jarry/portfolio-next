@@ -427,7 +427,15 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
             receiveShadow
             geometry={nodes.Cube014_1.geometry}
             material={materials["Monitor screen"]}
-          />
+          >
+            <Suspense fallback={
+              <meshBasicMaterial
+                map={materials["Monitor screen"].map}
+              />}
+            >
+              <VideoMaterial url="/textures/kda.mp4" />
+            </Suspense>
+          </mesh>
         </group>
         <group name="Garbage_can" position={[36.001, 2.336, 5.841]} scale={0}>
           <mesh
