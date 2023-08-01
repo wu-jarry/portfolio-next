@@ -355,26 +355,23 @@ type RoomModelProps = ComponentProps<typeof animated.group> & {
 }
 
 export function RoomModel({ animationState, progressAnimationState, ...props }: RoomModelProps) {
-const group = useRef<Group>(null);
-const { nodes, materials, animations } = useGLTF("/models/website ver2.glb") as GLTFResult;
-const { actions, mixer } = useAnimations(animations, group);
-//   const previousAction = usePrevious(actions)
+  const group = useRef<Group>(null);
+  const { nodes, materials, animations } = useGLTF("/models/website ver2.glb") as GLTFResult;
+  const { actions, mixer } = useAnimations(animations, group);
+  //   const previousAction = usePrevious(actions)
 
-useEffect(() => { 
-  for(const actionName of Object.keys(actions) as ActionName[]) {
-      const action = actions[actionName];
+  useEffect(() => {
+    for (const [actionName, action] of Object.entries(actions)) {
       action?.play();
 
-      if(action && actionName !== "FishAction"){
+      if (action && actionName !== "FishAction") {
         action.setLoop(THREE.LoopOnce, 1);
         action.clampWhenFinished = true;
         action.setEffectiveTimeScale(1);
       }
-      
-  }
-});
 
-console.log(actions)
+    }
+  }, [actions]);
 
   return (
     <animated.group ref={group} {...props} dispose={null}>
@@ -549,7 +546,7 @@ console.log(actions)
           position={[9.976, 2.18, 33.236]}
           scale={0}
         >
-            <meshPhysicalMaterial roughness={0.2} color={0xb8f3ff} ior={3} transmission={1} opacity={1} thickness={0.1} />
+          <meshPhysicalMaterial roughness={0.2} color={0xb8f3ff} ior={3} transmission={1} opacity={1} thickness={0.1} />
         </mesh>
         <mesh
           name="Aquarium_glass002"
