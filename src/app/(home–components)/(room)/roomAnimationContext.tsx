@@ -7,7 +7,7 @@ import React, { ComponentProps, Suspense, use, useCallback, useEffect, useMemo, 
 import { useGLTF, useAnimations, useHelper, useVideoTexture, } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
 import { Group, SpotLight, SpotLightHelper, PerspectiveCamera, CameraHelper, MeshBasicMaterial, MeshPhysicalMaterial, AnimationMixer, PointLight, PointLightHelper, } from "three";
-import { useSpring, animated, config, AnimatedComponent } from '@react-spring/three'
+import { useSpring, animated, config, AnimatedComponent, a } from '@react-spring/three'
 import { MeshBasicMaterialProps } from '@react-three/fiber'
 import { useShadowHelper } from "@/app/(hooks)/use-camera-shadow-helper";
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
@@ -20,8 +20,7 @@ type GLTFResult = GLTF & {
   nodes: {
     Plane005: THREE.Mesh;
     Plane005_1: THREE.Mesh;
-    Plane022: THREE.SkinnedMesh;
-    Plane022_1: THREE.SkinnedMesh;
+    Plane: THREE.SkinnedMesh;
     Cube014: THREE.Mesh;
     Cube014_1: THREE.Mesh;
     Cube090: THREE.Mesh;
@@ -85,8 +84,8 @@ type GLTFResult = GLTF & {
     Cylinder021_2: THREE.Mesh;
     Plane010: THREE.Mesh;
     Plane010_1: THREE.Mesh;
+    Cylinder: THREE.Mesh;
     Cylinder_1: THREE.Mesh;
-    Cylinder_2: THREE.Mesh;
     Cube081: THREE.Mesh;
     Cube081_1: THREE.Mesh;
     Cylinder014: THREE.Mesh;
@@ -119,10 +118,10 @@ type GLTFResult = GLTF & {
     Chair: THREE.Mesh;
     Chair_legs: THREE.Mesh;
     Clock: THREE.Mesh;
+    Cylinder001: THREE.Mesh;
     Cylinder001_1: THREE.Mesh;
-    Cylinder001_2: THREE.Mesh;
+    Cylinder006: THREE.Mesh;
     Cylinder006_1: THREE.Mesh;
-    Cylinder006_2: THREE.Mesh;
     Ceiling_lamp: THREE.Mesh;
     Ceiling_lamp_rod: THREE.Mesh;
     Couch: THREE.Mesh;
@@ -243,10 +242,11 @@ type ActionName =
   | "CabinetAction"
   | "CarpetAction"
   | "Entrance matAction"
-  | "Cabinet shelf topAction"
-  | "Cabinet shelf middleAction"
-  | "Cabinet shelf bottomAction"
+  | "Action.004"
+  | "Action.005"
+  | "Action.006"
   | "FishAction"
+  | "FishLoopAction"
   | "Aquarium glassAction"
   | "Aquarium roofAction"
   | "Aquarium bottomAction"
@@ -304,49 +304,41 @@ type ActionName =
   | "Pencil caseAction.001"
   | "KeyboardAction.001"
   | "TableAction"
-  | "Table itemsAction.001"
-  | "Table itemsAction.002"
-  | "Table itemsAction.003"
-  | "Table itemsAction.004"
+  | "Coffee mugAction"
+  | "Table book 1Action"
+  | "Table book 2Action"
+  | "Table book 3Action"
   | "ChairAction"
   | "Floor items.002Action.001"
   | "ClockAction"
   | "Clock.001Action"
   | "Clock.002Action"
-  | "Ceiling lampAction"
+  | "Action"
   | "Ceiling lamp rodAction"
   | "CouchAction.001"
-  | "Cushion 1Action"
-  | "Cushion 2Action"
-  | "Cushion 3Action"
+  | "Action.002"
+  | "Action.003"
+  | "Action.001"
   | "PillowAction"
   | "BlanketAction"
   | "ShelvesAction"
   | "Shelves.001Action"
   | "Shelves.002Action"
-  | "Book 1Action"
-  | "Book 2Action"
-  | "Book 3Action"
-  | "Book 4Action"
-  | "Book 5Action"
-  | "Book 6Action"
-  | "Book 7Action"
-  | "BoxAction.015"
-  | "Picture frameAction"
-  | "Shelf lampAction"
-  | "Shelf plantAction"
+  | "Book 1Action.001"
+  | "Book 2Action.001"
+  | "Book 3Action.001"
+  | "Book 4Action.001"
+  | "Book 5Action.001"
+  | "Book 6Action.001"
+  | "Book 7Action.001"
+  | "BoxAction"
+  | "Picture frameAction.001"
+  | "Shelf lampAction.001"
+  | "Shelf plantAction.001"
   | "CylinderAction"
   | "Cylinder.001Action"
   | "Cylinder.005Action"
-  | "Cylinder.006Action"
-  | "Ceiling lamp path"
-  | "Cushion 1 path"
-  | "Cushion 2 path"
-  | "Cushion 3 path"
-  | "Cabinet shelf top path"
-  | "Cabinet shelf top path.001"
-  | "Cabinet shelf top path.002"
-  | "NurbsPath.004Action.002";
+  | "Cylinder.006Action";
 type GLTFActions = Record<ActionName, THREE.AnimationAction>;
 
 function VideoMaterial({ url, ...props }: { url: string } & MeshBasicMaterialProps) {
@@ -363,25 +355,29 @@ type RoomModelProps = ComponentProps<typeof animated.group> & {
 }
 
 export function RoomModel({ animationState, progressAnimationState, ...props }: RoomModelProps) {
-const group = useRef<Group>(null);
-const { nodes, materials, animations } = useGLTF("/models/website ver2.glb") as GLTFResult;
-const { actions, mixer } = useAnimations(animations, group);
-//   const previousAction = usePrevious(actions)
+  const group = useRef<Group>(null);
+  const { nodes, materials, animations } = useGLTF("/models/website ver2.glb") as GLTFResult;
+  const { actions, mixer } = useAnimations(animations, group);
 
-useEffect(() => { 
-  for(const actionName of Object.keys(actions) as ActionName[]) {
-      const action = actions[actionName];
 
-      if(action){
+  const [lightOnSpringProps] = useSpring(() => ({
+      lightIntensity: (animationState >= AnimationStates.LIGHTS_ON) ? 1 : 0,
+      config: {
+          duration: 400
+      }
+  }), [animationState]);
+
+  useEffect(() => {
+    for (const [actionName, action] of Object.entries(actions)) {
+
+      if (action && actionName !== "FishLoopAction") {
         action.play();
         action.setLoop(THREE.LoopOnce, 1);
         action.clampWhenFinished = true;
         action.setEffectiveTimeScale(1);
       }
-  }
-});
-
-console.log(actions)
+    }
+  }, [actions]);
 
   return (
     <animated.group ref={group} {...props} dispose={null}>
@@ -407,20 +403,12 @@ console.log(actions)
           />
         </group>
         <group name="Cover" position={[0.553, 12.167, -0.133]} scale={8.75}>
-          <group name="Plane">
-            <skinnedMesh
-              name="Plane022"
-              geometry={nodes.Plane022.geometry}
-              material={materials.Walls}
-              skeleton={nodes.Plane022.skeleton}
-            />
-            <skinnedMesh
-              name="Plane022_1"
-              geometry={nodes.Plane022_1.geometry}
-              material={materials["Wall 2"]}
-              skeleton={nodes.Plane022_1.skeleton}
-            />
-          </group>
+          <skinnedMesh
+            name="Plane"
+            geometry={nodes.Plane.geometry}
+            material={materials.Walls}
+            skeleton={nodes.Plane.skeleton}
+          />
           <primitive object={nodes.Mother_bone} />
         </group>
         <group name="Computer" position={[33.668, 5.176, 3.196]} scale={0}>
@@ -437,7 +425,15 @@ console.log(actions)
             receiveShadow
             geometry={nodes.Cube014_1.geometry}
             material={materials["Monitor screen"]}
-          />
+          >
+            <Suspense fallback={
+              <meshBasicMaterial
+                map={materials["Monitor screen"].map}
+              />}
+            >
+              <VideoMaterial url="/textures/kda.mp4" />
+            </Suspense>
+          </mesh>
         </group>
         <group name="Garbage_can" position={[36.001, 2.336, 5.841]} scale={0}>
           <mesh
@@ -515,8 +511,8 @@ console.log(actions)
           receiveShadow
           geometry={nodes.fish.geometry}
           material={materials.Fish}
-          position={[7.3, 4.929, -6.94]}
-          scale={0}
+          position={[7.3, 4.797, -6.94]}
+          rotation={[1.578, -0.179, -0.003]}
         />
         <mesh
           name="Aquarium_glass"
@@ -526,7 +522,9 @@ console.log(actions)
           material={materials["Fish tank"]}
           position={[5.472, 4.837, 36.001]}
           scale={0}
-        />
+        >
+          <meshPhysicalMaterial roughness={0.2} color={0xb8f3ff} ior={3} transmission={1} opacity={1} thickness={0.1} />
+        </mesh>
         <mesh
           name="Aquarium_roof"
           castShadow
@@ -553,7 +551,9 @@ console.log(actions)
           material={materials["Fish tank"]}
           position={[9.976, 2.18, 33.236]}
           scale={0}
-        />
+        >
+          <meshPhysicalMaterial roughness={0.2} color={0xb8f3ff} ior={3} transmission={1} opacity={1} thickness={0.1} />
+        </mesh>
         <mesh
           name="Aquarium_glass002"
           castShadow
@@ -562,7 +562,9 @@ console.log(actions)
           material={materials["Fish tank"]}
           position={[0.957, 2.18, 33.217]}
           scale={0}
-        />
+        >
+          <meshPhysicalMaterial roughness={0.2} color={0xb8f3ff} ior={3} transmission={1} opacity={1} thickness={0.1} />
+        </mesh>
         <mesh
           name="Rocks_and_stuff"
           castShadow
@@ -982,17 +984,17 @@ console.log(actions)
         </group>
         <group name="WelcomeSign" position={[0.244, 31.031, 10.756]} scale={0}>
           <mesh
+            name="Cylinder"
+            castShadow
+            receiveShadow
+            geometry={nodes.Cylinder.geometry}
+            material={materials.Sign}
+          />
+          <mesh
             name="Cylinder_1"
             castShadow
             receiveShadow
             geometry={nodes.Cylinder_1.geometry}
-            material={materials.Sign}
-          />
-          <mesh
-            name="Cylinder_2"
-            castShadow
-            receiveShadow
-            geometry={nodes.Cylinder_2.geometry}
             material={materials["Welcome text"]}
           />
         </group>
@@ -1161,7 +1163,11 @@ console.log(actions)
             material={materials.Table}
           />
         </group>
-        <group name="Coffee_mug" position={[1.817, 2.922, 1.208]} scale={0}>
+        <group
+          name="Coffee_mug"
+          position={[1.817, 32.922, 1.208]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+        >
           <mesh
             name="Cube002"
             castShadow
@@ -1177,7 +1183,11 @@ console.log(actions)
             material={materials.Mug}
           />
         </group>
-        <group name="Table_book_1" position={[2.218, 2.944, 0.585]} scale={0}>
+        <group
+          name="Table_book_1"
+          position={[2.218, 32.944, 0.585]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+        >
           <mesh
             name="Cube003"
             castShadow
@@ -1193,7 +1203,11 @@ console.log(actions)
             material={materials.Pages}
           />
         </group>
-        <group name="Table_book_2" position={[2.223, 2.88, 0.306]} scale={0}>
+        <group
+          name="Table_book_2"
+          position={[2.223, 32.88, 0.306]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+        >
           <mesh
             name="Cube004"
             castShadow
@@ -1209,7 +1223,12 @@ console.log(actions)
             material={materials.Pages}
           />
         </group>
-        <group name="Table_book_3" position={[2.564, 2.647, -0.149]} scale={0}>
+        <group
+          name="Table_book_3"
+          position={[2.564, 32.647, -0.149]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+          scale={1.1}
+        >
           <mesh
             name="Cube005"
             castShadow
@@ -1254,33 +1273,33 @@ console.log(actions)
         />
         <group name="Clock001" position={[5.902, 11.744, -7.344]} scale={0}>
           <mesh
+            name="Cylinder001"
+            castShadow
+            receiveShadow
+            geometry={nodes.Cylinder001.geometry}
+            material={materials["Desk top.001"]}
+          />
+          <mesh
             name="Cylinder001_1"
             castShadow
             receiveShadow
             geometry={nodes.Cylinder001_1.geometry}
-            material={materials["Desk top.001"]}
-          />
-          <mesh
-            name="Cylinder001_2"
-            castShadow
-            receiveShadow
-            geometry={nodes.Cylinder001_2.geometry}
             material={materials.Pages}
           />
         </group>
         <group name="Clock002" position={[5.902, 11.744, -7.344]} scale={0}>
           <mesh
+            name="Cylinder006"
+            castShadow
+            receiveShadow
+            geometry={nodes.Cylinder006.geometry}
+            material={materials["Desk top.001"]}
+          />
+          <mesh
             name="Cylinder006_1"
             castShadow
             receiveShadow
             geometry={nodes.Cylinder006_1.geometry}
-            material={materials["Desk top.001"]}
-          />
-          <mesh
-            name="Cylinder006_2"
-            castShadow
-            receiveShadow
-            geometry={nodes.Cylinder006_2.geometry}
             material={materials.Pages}
           />
         </group>
@@ -1292,7 +1311,21 @@ console.log(actions)
           material={materials["Ceiling light"]}
           position={[2.439, 21.406, 0.125]}
           scale={0}
-        />
+        >
+          <LampLightSource intensity={lightOnSpringProps.lightIntensity} />
+
+           {/* 
+        // @ts-ignore */}
+          <animated.meshStandardMaterial
+              attach="material"
+              color={0xffffff}
+              emissive={0xffffff}
+              emissiveIntensity={lightOnSpringProps.lightIntensity}
+              metalness={0}
+              roughness={0.5}
+              opacity={1}
+          />
+        </mesh>
         <mesh
           name="Ceiling_lamp_rod"
           castShadow
@@ -1373,9 +1406,8 @@ console.log(actions)
           receiveShadow
           geometry={nodes.Shelves001.geometry}
           material={materials["Desk top.001"]}
-          position={[-6.055, 8.636, 3.603]}
-          rotation={[-0.299, 0, 0]}
-          scale={[0, 1, 0]}
+          position={[-6.055, 8.636, 33.603]}
+          scale={0}
         />
         <mesh
           name="Shelves002"
@@ -1383,11 +1415,10 @@ console.log(actions)
           receiveShadow
           geometry={nodes.Shelves002.geometry}
           material={materials["Desk top.001"]}
-          position={[-6.055, 10.804, 2.704]}
-          rotation={[-0.299, 0, 0]}
-          scale={[0, 1, 0]}
+          position={[-6.055, 10.804, 32.704]}
+          scale={0}
         />
-        <group name="Book_1" position={[-6.07, 10.888, 2.881]} scale={0}>
+        <group name="Book_1" position={[-6.07, 10.888, 37.881]} scale={0}>
           <mesh
             name="Cube072"
             castShadow
@@ -1403,7 +1434,7 @@ console.log(actions)
             material={materials.Pages}
           />
         </group>
-        <group name="Book_2" position={[-6.02, 10.98, 2.865]} scale={0}>
+        <group name="Book_2" position={[-6.02, 10.98, 37.865]} scale={0}>
           <mesh
             name="Cube073"
             castShadow
@@ -1419,7 +1450,7 @@ console.log(actions)
             material={materials["Book cover green"]}
           />
         </group>
-        <group name="Book_3" position={[-6.089, 11.074, 2.879]} scale={0}>
+        <group name="Book_3" position={[-6.089, 11.074, 37.879]} scale={0}>
           <mesh
             name="Cube074"
             castShadow
@@ -1435,7 +1466,7 @@ console.log(actions)
             material={materials["Book cover blue"]}
           />
         </group>
-        <group name="Book_4" position={[-6.009, 11.163, 2.112]} scale={0}>
+        <group name="Book_4" position={[-6.009, 11.163, 37.112]} scale={0}>
           <mesh
             name="Cube075"
             castShadow
@@ -1451,7 +1482,7 @@ console.log(actions)
             material={materials.Pages}
           />
         </group>
-        <group name="Book_5" position={[-6.009, 11.163, 2.022]} scale={0}>
+        <group name="Book_5" position={[-6.009, 11.163, 37.022]} scale={0}>
           <mesh
             name="Cube076"
             castShadow
@@ -1467,7 +1498,7 @@ console.log(actions)
             material={materials["Book cover blue"]}
           />
         </group>
-        <group name="Book_6" position={[-6.009, 11.163, 1.931]} scale={0}>
+        <group name="Book_6" position={[-6.009, 11.163, 36.931]} scale={0}>
           <mesh
             name="Cube077"
             castShadow
@@ -1483,7 +1514,7 @@ console.log(actions)
             material={materials["Book cover green"]}
           />
         </group>
-        <group name="Book_7" position={[-6.01, 11.148, 1.714]} scale={0}>
+        <group name="Book_7" position={[-6.01, 11.148, 36.714]} scale={0}>
           <mesh
             name="Cube078"
             castShadow
@@ -1499,7 +1530,7 @@ console.log(actions)
             material={materials["Book cover brown"]}
           />
         </group>
-        <group name="Box" position={[-5.904, 9.076, 2.935]} scale={0}>
+        <group name="Box" position={[-5.904, 9.076, 37.935]} scale={0}>
           <mesh
             name="Cube084"
             castShadow
@@ -1517,7 +1548,7 @@ console.log(actions)
         </group>
         <group
           name="Picture_frame"
-          position={[-4.273, 9.096, -7.287]}
+          position={[-39.273, 10.096, -5.787]}
           scale={0}
         >
           <mesh
@@ -1535,7 +1566,7 @@ console.log(actions)
             material={materials.Picture}
           />
         </group>
-        <group name="Shelf_lamp" position={[-5.998, 9.169, 4.833]} scale={0}>
+        <group name="Shelf_lamp" position={[-5.998, 9.169, 39.833]} scale={0}>
           <mesh
             name="Cube079"
             castShadow
@@ -1551,7 +1582,7 @@ console.log(actions)
             material={materials["Lamp base"]}
           />
         </group>
-        <group name="Shelf_plant" position={[-6.029, 11.345, 3.674]} scale={0}>
+        <group name="Shelf_plant" position={[-6.029, 11.345, 38.674]} scale={0}>
           <mesh
             name="Cube070"
             castShadow
@@ -1574,7 +1605,7 @@ console.log(actions)
             material={materials.Dirt}
           />
         </group>
-        <group name="Cylinder" position={[-3.428, 33.9, -6.738]} scale={0}>
+        <group name="Bottle" position={[-3.428, 33.9, -6.738]} scale={0}>
           <mesh
             name="Cylinder009"
             castShadow
@@ -1590,7 +1621,7 @@ console.log(actions)
             material={materials["Bottle cap"]}
           />
         </group>
-        <group name="Cylinder001" position={[-2.705, 33.819, -7.044]} scale={0}>
+        <group name="Bottle001" position={[-2.705, 33.819, -7.044]} scale={0}>
           <mesh
             name="Cylinder010"
             castShadow
@@ -1606,7 +1637,7 @@ console.log(actions)
             material={materials["Bottle cap"]}
           />
         </group>
-        <group name="Cylinder005" position={[-2.096, 33.901, -6.695]} scale={0}>
+        <group name="Bottle002" position={[-2.096, 33.901, -6.695]} scale={0}>
           <mesh
             name="Cylinder011"
             castShadow
@@ -1622,7 +1653,7 @@ console.log(actions)
             material={materials["Bottle cap"]}
           />
         </group>
-        <group name="Cylinder006" position={[-1.506, 34.247, -7.093]} scale={0}>
+        <group name="Bottle003" position={[-1.506, 34.247, -7.093]} scale={0}>
           <mesh
             name="Cylinder012"
             castShadow
@@ -1638,40 +1669,6 @@ console.log(actions)
             material={materials["Bottle cap"]}
           />
         </group>
-        <group name="Ceiling_lamp_path" position={[0.92, 21.406, 0.125]} />
-        <group
-          name="Cushion_1_path"
-          position={[-4.496, 3.76, 1.102]}
-          rotation={[0, Math.PI / 2, 0]}
-          scale={4.322}
-        />
-        <group
-          name="Cushion_2_path"
-          position={[-2.009, 3.76, 1.102]}
-          rotation={[0, Math.PI / 2, 0]}
-          scale={4.322}
-        />
-        <group
-          name="Cushion_3_path"
-          position={[0.48, 3.76, 1.102]}
-          rotation={[0, Math.PI / 2, 0]}
-          scale={4.322}
-        />
-        <group
-          name="Cabinet_shelf_top_path"
-          position={[-3.642, 2.905, 0.733]}
-          rotation={[0, -0.251, 0]}
-        />
-        <group
-          name="Cabinet_shelf_top_path001"
-          position={[-3.642, 2.323, 0.733]}
-          rotation={[0, -0.251, 0]}
-        />
-        <group
-          name="Cabinet_shelf_top_path002"
-          position={[-3.642, 1.745, 0.733]}
-          rotation={[0, -0.251, 0]}
-        />
       </group>
     </animated.group>
   );

@@ -7,7 +7,7 @@ import React, { ComponentProps, Suspense, use, useCallback, useEffect, useMemo, 
 import { useGLTF, useAnimations, useHelper, useVideoTexture, } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
 import { Group, SpotLight, SpotLightHelper, PerspectiveCamera, CameraHelper, MeshBasicMaterial, MeshPhysicalMaterial, AnimationMixer, PointLight, PointLightHelper, } from "three";
-import { useSpring, animated, config, AnimatedComponent } from '@react-spring/three'
+import { useSpring, animated, config, AnimatedComponent, a } from '@react-spring/three'
 import { MeshBasicMaterialProps } from '@react-three/fiber'
 import { useShadowHelper } from "@/app/(hooks)/use-camera-shadow-helper";
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
@@ -20,8 +20,8 @@ type GLTFResult = GLTF & {
   nodes: {
     Plane005: THREE.Mesh;
     Plane005_1: THREE.Mesh;
-    Plane022: THREE.SkinnedMesh;
-    Plane022_1: THREE.SkinnedMesh;
+    Plane005_2: THREE.Mesh;
+    Plane: THREE.SkinnedMesh;
     Cube014: THREE.Mesh;
     Cube014_1: THREE.Mesh;
     Cube090: THREE.Mesh;
@@ -170,6 +170,7 @@ type GLTFResult = GLTF & {
   materials: {
     Walls: THREE.MeshPhysicalMaterial;
     ["Wall 2"]: THREE.MeshStandardMaterial;
+    Window: THREE.MeshStandardMaterial;
     ["Monitor frame"]: THREE.MeshStandardMaterial;
     ["Monitor screen"]: THREE.MeshStandardMaterial;
     ["Trash lid"]: THREE.MeshStandardMaterial;
@@ -304,10 +305,10 @@ type ActionName =
   | "Pencil caseAction.001"
   | "KeyboardAction.001"
   | "TableAction"
-  | "Table itemsAction.001"
-  | "Table itemsAction.002"
-  | "Table itemsAction.003"
-  | "Table itemsAction.004"
+  | "Coffee mugAction"
+  | "Table book 1Action"
+  | "Table book 2Action"
+  | "Table book 3Action"
   | "ChairAction"
   | "Floor items.002Action.001"
   | "ClockAction"
@@ -358,18 +359,37 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
   const group = useRef<Group>(null);
   const { nodes, materials, animations } = useGLTF("/models/website ver2.glb") as GLTFResult;
   const { actions, mixer } = useAnimations(animations, group);
-  //   const previousAction = usePrevious(actions)
+
+  useEffect(() => {
+    const fishActionOn = () => {
+      if (actions.FishAction) {
+        actions.FishAction.play();
+        actions.FishAction.setLoop(THREE.LoopRepeat, Infinity);
+        actions.FishAction.setEffectiveTimeScale(1);
+      }
+    };
+
+    const interval = setInterval(fishActionOn, 3000);
+    return () => clearInterval(interval);
+  }, [actions]);
+
+  const [lightOnSpringProps] = useSpring(() => ({
+      lightIntensity: (animationState >= AnimationStates.LIGHTS_ON) ? 1 : 0,
+      config: {
+          duration: 400
+      }
+  }), [animationState]);
+
 
   useEffect(() => {
     for (const [actionName, action] of Object.entries(actions)) {
-      action?.play();
-
+      
       if (action && actionName !== "FishAction") {
+        action.play();
         action.setLoop(THREE.LoopOnce, 1);
         action.clampWhenFinished = true;
         action.setEffectiveTimeScale(1);
       }
-
     }
   }, [actions]);
 
@@ -395,22 +415,21 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
             geometry={nodes.Plane005_1.geometry}
             material={materials["Wall 2"]}
           />
+          <mesh
+            name="Plane005_2"
+            castShadow
+            receiveShadow
+            geometry={nodes.Plane005_2.geometry}
+            material={materials.Window}
+          />
         </group>
         <group name="Cover" position={[0.553, 12.167, -0.133]} scale={8.75}>
-          <group name="Plane">
-            <skinnedMesh
-              name="Plane022"
-              geometry={nodes.Plane022.geometry}
-              material={materials.Walls}
-              skeleton={nodes.Plane022.skeleton}
-            />
-            <skinnedMesh
-              name="Plane022_1"
-              geometry={nodes.Plane022_1.geometry}
-              material={materials["Wall 2"]}
-              skeleton={nodes.Plane022_1.skeleton}
-            />
-          </group>
+          <skinnedMesh
+            name="Plane"
+            geometry={nodes.Plane.geometry}
+            material={materials.Walls}
+            skeleton={nodes.Plane.skeleton}
+          />
           <primitive object={nodes.Mother_bone} />
         </group>
         <group name="Computer" position={[33.668, 5.176, 3.196]} scale={0}>
@@ -505,7 +524,6 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
           geometry={nodes.Cabinet_shelf_bottom.geometry}
           material={materials["Desk top.001"]}
           position={[-11.242, 4.424, 1.642]}
-          scale={0}
         />
         <mesh
           name="fish"
@@ -513,7 +531,8 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
           receiveShadow
           geometry={nodes.fish.geometry}
           material={materials.Fish}
-          position={[7.3, 4.929, -6.94]}
+          position={[7.3, 4.797, -6.94]}
+          rotation={[1.578, -0.179, -0.003]}
           scale={0}
         />
         <mesh
@@ -808,7 +827,7 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
           geometry={nodes.Aquarium_plant004.geometry}
           material={materials["Fish tank thing 1"]}
           position={[5.471, 29.18, -5.741]}
-          scale={1}
+          scale={0}
         />
         <mesh
           name="Aquarium_plant"
@@ -945,7 +964,7 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
           position={[3.075, 31.017, 11.046]}
           scale={0}
         />
-        <group name="Mailbox" position={[5.322, 1.002, 10.081]} scale={0} rotation={[0, -Math.PI, 0]}>
+        <group name="Mailbox" position={[5.322, 1.002, 10.081]} scale={0}>
           <mesh
             name="Cylinder021"
             castShadow
@@ -1165,7 +1184,11 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
             material={materials.Table}
           />
         </group>
-        <group name="Coffee_mug" position={[1.817, 2.922, 1.208]} scale={0}>
+        <group
+          name="Coffee_mug"
+          position={[1.817, 32.922, 1.208]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+        >
           <mesh
             name="Cube002"
             castShadow
@@ -1181,7 +1204,11 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
             material={materials.Mug}
           />
         </group>
-        <group name="Table_book_1" position={[2.218, 2.944, 0.585]} scale={0}>
+        <group
+          name="Table_book_1"
+          position={[2.218, 32.944, 0.585]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+        >
           <mesh
             name="Cube003"
             castShadow
@@ -1197,7 +1224,11 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
             material={materials.Pages}
           />
         </group>
-        <group name="Table_book_2" position={[2.223, 2.88, 0.306]} scale={0}>
+        <group
+          name="Table_book_2"
+          position={[2.223, 32.88, 0.306]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+        >
           <mesh
             name="Cube004"
             castShadow
@@ -1213,7 +1244,12 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
             material={materials.Pages}
           />
         </group>
-        <group name="Table_book_3" position={[2.564, 2.647, -0.149]} scale={0}>
+        <group
+          name="Table_book_3"
+          position={[2.564, 32.647, -0.149]}
+          rotation={[Math.PI, -0.895, Math.PI]}
+          scale={1.1}
+        >
           <mesh
             name="Cube005"
             castShadow
@@ -1296,7 +1332,21 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
           material={materials["Ceiling light"]}
           position={[2.439, 21.406, 0.125]}
           scale={0}
-        />
+        >
+          <LampLightSource intensity={lightOnSpringProps.lightIntensity} />
+
+          {/* 
+          // @ts-ignore */}
+          <animated.meshStandardMaterial
+            attach="material"
+            color={0xffffff}
+            emissive={0xffffff}
+            emissiveIntensity={lightOnSpringProps.lightIntensity}
+            metalness={0}
+            roughness={0.5}
+            opacity={1}
+          />
+        </mesh>
         <mesh
           name="Ceiling_lamp_rod"
           castShadow

@@ -12,7 +12,7 @@ export const SunlightSource = () => {
     // useHelper(light2, DirectionalLightHelper, 0.2, 'hotpink');
 
     return (
-        <directionalLight shadow-normalBias={0.05} ref={light2} color={0xffffff} intensity={1} castShadow shadow-mapSize={[4096, 4096]} position={[-1.5, 7, 3]}>
+        <directionalLight shadow-normalBias={0.05} ref={light2} color={0xffffff} intensity={1} shadow-mapSize={[4096, 4096]} position={[-1.5, 7, 3]}>
             {/* <orthographicCamera attach='shadow-camera' args={[-20, 20, 20, -20, 0.1, 25]} /> */}
         </directionalLight>
     )

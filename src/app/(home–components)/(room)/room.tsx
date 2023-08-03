@@ -200,12 +200,12 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
     const { nodes, materials, animations } = useGLTF("/models/website.glb") as GLTFResult;
     const { actions } = useAnimations(animations, group);
 
-    const [boxTranslateSpringProps, setboxTranslateSpringProps] = useSpring(() => ({
-        boxTranslateY: (animationState >= AnimationStates.BOX_OFF) ? 100 : 0,
-        config: {
-            duration: 1000
-        }
-    }), [animationState]);
+    // const [boxTranslateSpringProps, setboxTranslateSpringProps] = useSpring(() => ({
+    //     boxTranslateY: (animationState >= AnimationStates.BOX_OFF) ? 100 : 0,
+    //     config: {
+    //         duration: 1000
+    //     }
+    // }), [animationState]);
 
     const [lightOnSpringProps] = useSpring(() => ({
         lightIntensity: (animationState >= AnimationStates.LIGHTS_ON) ? 1 : 0,
@@ -931,7 +931,7 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
                 </>
                 <animated.group
                     name="Cube"
-                    position={boxTranslateSpringProps.boxTranslateY.to(interpolateBoxPosition)}
+                    // position={boxTranslateSpringProps.boxTranslateY.to(interpolateBoxPosition)}
                     rotation={[Math.PI, -0.763, Math.PI]}
                     scale={[20, 20, 20]}
                 >
