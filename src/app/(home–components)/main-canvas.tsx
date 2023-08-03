@@ -67,7 +67,7 @@ export const MainCanvas = () => {
           args={[(-aspectRatio * 3.5) / 2, (aspectRatio * 3.5) / 2, 3.5 / 2, -3.5 / 2, -50, 50]}
         />
         <SunlightSource />
-        <hemisphereLight color={'skyColor'} intensity={0.5} />
+        <hemisphereLight color={'skyColor'} intensity={0.3} />
         <RectAreaLightSource />
         <RoomModel
           {...{ animationState, progressAnimationState }}

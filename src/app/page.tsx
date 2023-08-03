@@ -7,6 +7,7 @@ export default function Home() {
 
       <div className="fixed w-full h-full inset-0">
         <MainCanvas />
+        hello
       </div>
 
     </main>

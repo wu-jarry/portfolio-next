@@ -34,7 +34,7 @@ export const RectAreaLightSource = (lightProps: ComponentProps<typeof animated.r
     // useHelper(light3, RectAreaLightHelper, 0.2);
     
     const [isVisible, setIsVisible] = useState(false);
-    const delay = 5000; // Delay in milliseconds before the light turns on
+    const delay = 4000; // Delay in milliseconds before the light turns on
   
     useEffect(() => {
       // Start the timeout for the delay
