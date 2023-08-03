@@ -373,8 +373,18 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
     return () => clearInterval(interval);
   }, [actions]);
 
+  const [lightOn, setLightOn] = useState(false);
+
+  useEffect(() => {
+    const delayTimeout = setTimeout(() => {
+      setLightOn(true);
+    }, 4000);
+
+    return () => clearTimeout(delayTimeout);
+  }, []);
+
   const [lightOnSpringProps] = useSpring(() => ({
-      lightIntensity: (animationState >= AnimationStates.LIGHTS_ON) ? 1 : 0,
+      lightIntensity: lightOn ? 1 : 0,
       config: {
           duration: 400
       }
@@ -383,7 +393,6 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
 
   useEffect(() => {
     for (const [actionName, action] of Object.entries(actions)) {
-      
       if (action && actionName !== "FishAction") {
         action.play();
         action.setLoop(THREE.LoopOnce, 1);
@@ -1326,7 +1335,7 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
         </group>
         <mesh
           name="Ceiling_lamp"
-          castShadow
+          // castShadow
           receiveShadow
           geometry={nodes.Ceiling_lamp.geometry}
           material={materials["Ceiling light"]}
@@ -1349,7 +1358,7 @@ export function RoomModel({ animationState, progressAnimationState, ...props }: 
         </mesh>
         <mesh
           name="Ceiling_lamp_rod"
-          castShadow
+          // castShadow
           receiveShadow
           geometry={nodes.Ceiling_lamp_rod.geometry}
           material={materials["Ceiling rod"]}
