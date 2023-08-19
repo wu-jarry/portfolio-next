@@ -1,9 +1,9 @@
 "use client"
 import * as THREE from 'three'
+import { CameraHelper, DirectionalLight, DirectionalLightHelper, HemisphereLight, Object3D, OrthographicCamera, PointLight, PointLightHelper, RectAreaLight, SpotLight, SpotLightHelper } from 'three'
 import { useHelper } from '@react-three/drei';
 import { dir } from 'console';
-import { ComponentProps, use, useRef, useEffect, useState } from 'react';
-import { CameraHelper, DirectionalLight, DirectionalLightHelper, HemisphereLight, Object3D, OrthographicCamera, PointLight, PointLightHelper, RectAreaLight, SpotLight, SpotLightHelper } from 'three'
+import { ComponentProps, useRef, useEffect, useState, useMemo } from 'react';
 import { useShadowHelper } from '../../(hooks)/use-camera-shadow-helper';
 import { useSpring, animated, config, AnimatedComponent } from '@react-spring/three'
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
@@ -98,6 +98,66 @@ export const HemisphereLightSource = (lightProps: ComponentProps<typeof animated
     // useHelper(light4, RectAreaLightHelper, 0.2);
 
     return(
-        <hemisphereLight ref={light4} color={0x7CB8C2} intensity={0.2}/>
+        <animated.hemisphereLight ref={light4} color={0x7CB8C2} intensity={0.2}/>
     )
+};
+
+// export const ObjectSpotLightSource = (lightProps: ComponentProps<typeof animated.spotLight>) => {
+//   const light5 = useRef<SpotLight>(null!);
+//   // useHelper(light5, SpotLightHelper, 0.2);
+
+//   const light5Target = new THREE.Object3D();
+//   light5Target.position.set(-0.8, -0.5, 0.3);
+
+//   return (
+//     <animated.spotLight 
+//       {...lightProps} 
+//       ref={light5} 
+//       color={'red'} 
+//       distance={10} 
+//       angle={Math.PI/8} 
+//       position={[2, 3, 0.6]} 
+//       target={light5Target}
+//       castShadow={false}
+//       penumbra={1} 
+//       shadow-mapSize={[4096, 4096]} 
+//       shadow-normalBias={0.05}
+//     >
+//       <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={5000} />
+//     </animated.spotLight>
+//   )
+// };
+
+export const ObjectSpotLightSource = (lightProps: ComponentProps<typeof animated.spotLight>) => {
+  const light5 = useRef<SpotLight>(null!);
+  // const light5Target = new THREE.Object3D();
+  // light5Target.position.set(-0.8, -0.5, 0.3);
+  
+  // useHelper(light5, SpotLightHelper, 0.2);
+  
+  // useEffect(() => {
+  //   if(light5.current){
+  //     light5.current.target = light5Target;
+  //   }
+  // });
+
+  return (
+      <>
+      <animated.spotLight 
+          {...lightProps} 
+          ref={light5} 
+          color={'red'} 
+          distance={20}
+          angle={Math.PI/29} 
+          position={[20, 4, -8.5]} 
+          // target={light5Target}
+          penumbra={1} 
+          castShadow={true} 
+          shadow-mapSize={[4096, 4096]} 
+          shadow-normalBias={0.05}
+      >
+          <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={5000} />
+      </animated.spotLight>
+      </>
+  )
 };
