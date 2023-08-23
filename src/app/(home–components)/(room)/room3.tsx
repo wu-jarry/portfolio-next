@@ -15,7 +15,7 @@ import { GLTF } from "three-stdlib";
 import { LampLightSource } from "./lights";
 import { timeStamp } from "console";
 import { finished } from 'stream';
-import { RectAreaLightSource, ObjectSpotLightSource } from '@/app/(home–components)/(room)/lights'; // Import RectAreaLightSource
+import { RectAreaLightSource, MonitorSpotLightSource, MailboxSpotLightSource, BottleSpotLightSource } from '@/app/(home–components)/(room)/lights'; // Import RectAreaLightSource
 import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
 
 
@@ -355,52 +355,31 @@ function VideoMaterial({ url, ...props }: { url: string } & MeshBasicMaterialPro
 }
 
 type RoomModelProps = ComponentProps<typeof animated.group> & {
-    onAnyObjectClicked: (state: boolean) => void;
+    onMonitorClicked: (state: boolean) => void;
+    onMailboxClicked: (state: boolean) => void;
+    onBottleClicked: (state: boolean) => void;
   }
 
-export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
+export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked, ...props }: RoomModelProps) {
   const group = useRef<Group>(null);
   const { nodes, materials, animations } = useGLTF("/models/website ver2.glb") as GLTFResult;
   const { actions, mixer } = useAnimations(animations, group);
-  // const [lightOn, setLightOn] = useState(false);
+
+  const [animationsFinished, setAnimationsFinished] = useState(false);
   const [animationStartClick, setAnimationStartClick] = useState(false);
   const [monitorClick, setMonitorClick] = useState(false);
-  const [coverCubeScale, setCoverCubeScale] = useState(17.648);
+  const [mailboxClick, setMailboxClick] = useState(false);
+  const [bottleClick, setBottleClick] = useState(false);
+
   const [isCoverHovered, setIsCoverHovered] = useState(false);
   const [isMonitorHovered, setIsMonitorHovered] = useState(false);
-  const [animationsFinished, setAnimationsFinished] = useState(false);
+  const [isMailboxHovered, setIsMailboxHovered] = useState(false);
+  const [isBottleHovered, setIsBottleHovered] = useState(false);
+
+  const [coverCubeScale, setCoverCubeScale] = useState(17.648);
+
   const [arrowBounce, setArrowBounce] = useState(0);
   const arrowBounceRef = useRef(0);
-
-  const handleCoverClick = () => {
-    if(!animationStartClick){
-      setAnimationStartClick(true);
-    }
-  };
-
-  const handleCoverHover = () => {
-    if(!animationStartClick) {
-      setIsCoverHovered(true);
-    }
-  };
-
-  const handleCoverUnhover = () => {
-    if(!animationStartClick) {
-      setIsCoverHovered(false);
-    }
-  };
-
-  const monitorCoverHover = () => {
-    if(!monitorClick){
-      setIsMonitorHovered(true);
-    }
-  };
-
-  const monitorCoverUnhover = () => {
-    if(!monitorClick){
-      setIsMonitorHovered(false);
-    }
-  };
 
   const [coverCubeSpringProps] = useSpring(() => ({
     scale: isCoverHovered ? coverCubeScale * 1.03 : coverCubeScale,
@@ -410,18 +389,34 @@ export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
   }), [coverCubeScale, isCoverHovered, isMonitorHovered]);
 
   const [monitorSpringProps] = useSpring(() => ({
-    monitorScale: isMonitorHovered ? 1.1 : 1,
-    monitorPosition: isMonitorHovered ? [0, 0.11, 0] : [0, 0, 0],
+    monitorScale: isMonitorHovered ? 1.1 + (arrowBounce * 0.2) : 1,
+    monitorPosition: isMonitorHovered ? [0, 0.11 + arrowBounce * 0.2, 0] : [0, 0, 0],
     chairPosition: monitorClick ? [-2.287, 2.782, -2.252] as any : [-2.287, 2.782, 3.252] as any,
     chairLegPosition: monitorClick ? [-2.287, 1.387, -2.252] as any : [-2.287, 1.387, 3.252] as any,
     config: {
       duration: 200
     },
-  }), [isMonitorHovered, monitorClick]);
+  }), [isMonitorHovered, monitorClick, arrowBounce]);
+
+  const [mailboxSpringProps] = useSpring(() => ({
+    mailboxScale: isMailboxHovered ? 1.1 + (arrowBounce * 0.2) : 1,
+    config: {
+      duration: 200
+    },
+  }), [isMailboxHovered, arrowBounce]);
+
+  const [bottleSpringProps] = useSpring(() => ({
+    bottlePosition: isBottleHovered ? [0, 0.15 + arrowBounce * 0.3, 0] as any : [0, 0.01, 0] as any,
+    config: {
+      duration: 200
+    },
+  }), [isBottleHovered, arrowBounce]);
 
   const [lightOnSpringProps] = useSpring(() => ({
       lampLightIntensity: animationsFinished ? 1 : 0,
-      objectLightIntensity: animationsFinished ? 10 : 0,
+      monitorLightIntensity: animationsFinished ? 10 : 0,
+      mailboxLightIntensity: animationsFinished ? 1.5 : 0,
+      bottleLightIntensity: animationsFinished ? 3 : 0,
       config: {
           duration: 400
       }
@@ -468,7 +463,6 @@ export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
       
       if(actionsList.length === Object.keys(actions).length-2){
         setAnimationsFinished(true);
-        // setCoverCubeScale(0);
       }
     });
   }, [actions, mixer, animationStartClick]);
@@ -507,9 +501,9 @@ export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
           </group>
           <animated.mesh
             name="Cover_cube"
-            onClick={handleCoverClick}
-            onPointerOver={handleCoverHover}
-            onPointerOut={handleCoverUnhover}
+            onClick={() => {if(!animationStartClick){setAnimationStartClick(true)};}}
+            onPointerOver={() => {if(!animationStartClick){setIsCoverHovered(true)}}}
+            onPointerOut={() => {if(!animationStartClick){setIsCoverHovered(false)}}}
             castShadow
             receiveShadow
             geometry={nodes.Cover_cube.geometry}
@@ -544,9 +538,9 @@ export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
             <primitive object={nodes.Mother_bone} />
           </group>
           <group name="Computer" position={[33.668, 5.176, 3.196]} scale={0}>
-            <ObjectSpotLightSource intensity={lightOnSpringProps.objectLightIntensity}/>
+            <MonitorSpotLightSource intensity={lightOnSpringProps.monitorLightIntensity}/>
             {/* @ts-ignore */}
-            <animated.mesh name='Computer' onClick={() => {setMonitorClick(!monitorClick); onAnyObjectClicked();}} onPointerOver={monitorCoverHover} onPointerOut={monitorCoverUnhover} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
+            <animated.mesh name='Computer' onClick={() => {setMonitorClick(!monitorClick); setIsMonitorHovered(false); onMonitorClicked();}} onPointerOver={() => {if(!monitorClick){setIsMonitorHovered(true);}}} onPointerOut={() => {if(!monitorClick){setIsMonitorHovered(false);}}} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
               <mesh
                 name="Cube014"
                 // castShadow
@@ -1092,6 +1086,9 @@ export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
             scale={0}
           />
           <group name="Mailbox" position={[5.322, 1.002, 10.081]} scale={0}>
+            <MailboxSpotLightSource intensity={lightOnSpringProps.mailboxLightIntensity}/>
+            {/* @ts-ignore */}
+            <animated.mesh name='Mailbox' onClick={() => {setMailboxClick(!mailboxClick); setIsMailboxHovered(false); onMailboxClicked();}} onPointerOver={() => {if(!mailboxClick){setIsMailboxHovered(true)}}} onPointerOut={() => {if(!monitorClick){setIsMailboxHovered(false)}}} scale={mailboxSpringProps.mailboxScale}>
             <mesh
               name="Cylinder021"
               castShadow
@@ -1113,6 +1110,18 @@ export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
               geometry={nodes.Cylinder021_2.geometry}
               material={materials["Desk top.001"]}
             />
+             <Html position={[1.2, 2.7 + arrowBounce, 0.8]} rotation={[-Math.PI/4, -Math.PI/4, -Math.PI/4]}
+                style={{
+                  transition: '0.5s', 
+                  opacity: animationsFinished ? 1 : 0,
+                  transform: `scale(${mailboxClick ? 0 : 1})`
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" >
+                  <path d="M480-362q-8 0-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-373q-6 6-13 8.5t-15 2.5Z"/>
+                </svg>
+              </Html>
+            </animated.mesh>
           </group>
           <group name="Lamp" position={[0.257, 1.001, 9.019]} scale={0}>
             <mesh
@@ -1755,70 +1764,84 @@ export function RoomModel({ onAnyObjectClicked, ...props }: RoomModelProps) {
               material={materials.Dirt}
             />
           </group>
-          <group name="Bottle" position={[-3.428, 33.9, -6.738]} scale={0}>
-            <mesh
-              name="Cylinder009"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder009.geometry}
-              material={materials["Bottle 1"]}
-            />
-            <mesh
-              name="Cylinder009_1"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder009_1.geometry}
-              material={materials["Bottle cap"]}
-            />
-          </group>
-          <group name="Bottle001" position={[-2.705, 33.819, -7.044]} scale={0}>
-            <mesh
-              name="Cylinder010"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder010.geometry}
-              material={materials["Bottle 2"]}
-            />
-            <mesh
-              name="Cylinder010_1"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder010_1.geometry}
-              material={materials["Bottle cap"]}
-            />
-          </group>
-          <group name="Bottle002" position={[-2.096, 33.901, -6.695]} scale={0}>
-            <mesh
-              name="Cylinder011"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder011.geometry}
-              material={materials["Bottle 3"]}
-            />
-            <mesh
-              name="Cylinder011_1"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder011_1.geometry}
-              material={materials["Bottle cap"]}
-            />
-          </group>
-          <group name="Bottle003" position={[-1.506, 34.247, -7.093]} scale={0}>
-            <mesh
-              name="Cylinder012"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder012.geometry}
-              material={materials["Bottle 4"]}
-            />
-            <mesh
-              name="Cylinder012_1"
-              castShadow
-              receiveShadow
-              geometry={nodes.Cylinder012_1.geometry}
-              material={materials["Bottle cap"]}
-            />
-          </group>
+          <animated.group name="Bottle group" onClick={() => {setBottleClick(!bottleClick); setIsBottleHovered(false); onBottleClicked(bottleClick);}} onPointerOver={() => {if(!bottleClick){setIsBottleHovered(true);}}} onPointerOut={() => {if(!bottleClick){setIsBottleHovered(false)}}} position={bottleSpringProps.bottlePosition}>
+            <group name="Bottle" position={[-3.428, 33.9, -6.738]} scale={0}>
+              <mesh
+                name="Cylinder009"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder009.geometry}
+                material={materials["Bottle 1"]}
+              />
+              <mesh
+                name="Cylinder009_1"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder009_1.geometry}
+                material={materials["Bottle cap"]}
+              />
+            </group>
+            <group name="Bottle001" position={[-2.705, 33.819, -7.044]} scale={0}>
+              <mesh
+                name="Cylinder010"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder010.geometry}
+                material={materials["Bottle 2"]}
+              />
+              <Html position={[-3.2, 2.7 + arrowBounce, -2.8]} rotation={[-Math.PI/4, -Math.PI/4, -Math.PI/4]}
+                style={{
+                  transition: '0.5s', 
+                  opacity: animationsFinished ? 1 : 0,
+                  transform: `scale(${bottleClick ? 0 : 1})`
+                }}
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" >
+                  <path d="M480-362q-8 0-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-373q-6 6-13 8.5t-15 2.5Z"/>
+                </svg>
+              </Html>
+              <mesh
+                name="Cylinder010_1"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder010_1.geometry}
+                material={materials["Bottle cap"]}
+                />
+                <BottleSpotLightSource intensity={lightOnSpringProps.bottleLightIntensity}/>
+            </group>
+            <group name="Bottle002" position={[-2.096, 33.901, -6.695]} scale={0}>
+              <mesh
+                name="Cylinder011"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder011.geometry}
+                material={materials["Bottle 3"]}
+              />
+              <mesh
+                name="Cylinder011_1"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder011_1.geometry}
+                material={materials["Bottle cap"]}
+              />
+            </group>
+            <group name="Bottle003" position={[-1.506, 34.247, -7.093]} scale={0}>
+              <mesh
+                name="Cylinder012"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder012.geometry}
+                material={materials["Bottle 4"]}
+              />
+              <mesh
+                name="Cylinder012_1"
+                castShadow
+                receiveShadow
+                geometry={nodes.Cylinder012_1.geometry}
+                material={materials["Bottle cap"]}
+              />
+            </group>
+          </animated.group>
         </group>
       </animated.group>
     </>

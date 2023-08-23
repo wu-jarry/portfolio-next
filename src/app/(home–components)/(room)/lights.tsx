@@ -102,44 +102,9 @@ export const HemisphereLightSource = (lightProps: ComponentProps<typeof animated
     )
 };
 
-// export const ObjectSpotLightSource = (lightProps: ComponentProps<typeof animated.spotLight>) => {
-//   const light5 = useRef<SpotLight>(null!);
-//   // useHelper(light5, SpotLightHelper, 0.2);
-
-//   const light5Target = new THREE.Object3D();
-//   light5Target.position.set(-0.8, -0.5, 0.3);
-
-//   return (
-//     <animated.spotLight 
-//       {...lightProps} 
-//       ref={light5} 
-//       color={'red'} 
-//       distance={10} 
-//       angle={Math.PI/8} 
-//       position={[2, 3, 0.6]} 
-//       target={light5Target}
-//       castShadow={false}
-//       penumbra={1} 
-//       shadow-mapSize={[4096, 4096]} 
-//       shadow-normalBias={0.05}
-//     >
-//       <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={5000} />
-//     </animated.spotLight>
-//   )
-// };
-
-export const ObjectSpotLightSource = (lightProps: ComponentProps<typeof animated.spotLight>) => {
+export const MonitorSpotLightSource = (lightProps: ComponentProps<typeof animated.spotLight>) => {
   const light5 = useRef<SpotLight>(null!);
-  // const light5Target = new THREE.Object3D();
-  // light5Target.position.set(-0.8, -0.5, 0.3);
-  
   // useHelper(light5, SpotLightHelper, 0.2);
-  
-  // useEffect(() => {
-  //   if(light5.current){
-  //     light5.current.target = light5Target;
-  //   }
-  // });
 
   return (
       <>
@@ -150,11 +115,68 @@ export const ObjectSpotLightSource = (lightProps: ComponentProps<typeof animated
           distance={20}
           angle={Math.PI/29} 
           position={[20, 4, -8.5]} 
-          // target={light5Target}
           penumbra={1} 
           castShadow={true} 
           shadow-mapSize={[4096, 4096]} 
           shadow-normalBias={0.05}
+      >
+          <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={5000} />
+      </animated.spotLight>
+      </>
+  )
+};
+
+export const MailboxSpotLightSource = (lightProps: ComponentProps<typeof animated.spotLight>) => {
+  const light6 = useRef<SpotLight>(null!);
+  // useHelper(light6, SpotLightHelper, 0.2);
+
+  useEffect(() => {
+      light6.current?.target.position.set(0.6, -5, 1.1);
+      light6.current?.target.updateMatrixWorld();
+  }, []);
+
+  return ( 
+      <>
+      <animated.spotLight 
+          {...lightProps} 
+          ref={light6} 
+          color={'red'} 
+          distance={10}
+          angle={Math.PI/25} 
+          position={[0.2, 14, 0.3]} 
+          penumbra={1} 
+          castShadow={true} 
+          shadow-mapSize={[4096, 4096]} 
+          shadow-normalBias={0.05}
+      >
+          <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={5000} />
+      </animated.spotLight>
+      </>
+  )
+};
+
+export const BottleSpotLightSource = (lightProps: ComponentProps<typeof animated.spotLight>) => {
+  const light7 = useRef<SpotLight>(null!);
+  // useHelper(light7, SpotLightHelper, 0.2);
+
+  useEffect(() => {
+      light7.current?.target.position.set(0, 0, -2.8);
+      light7.current?.target.updateMatrixWorld();
+  }, []);
+
+  return ( 
+      <>
+      <animated.spotLight 
+          {...lightProps} 
+          ref={light7} 
+          color={'red'} 
+          distance={5} 
+          angle={Math.PI/7} 
+          position={[-1.2, 2, 10.3]} 
+          penumbra={1} 
+          castShadow={true} 
+          shadow-mapSize={[4096, 4096]} 
+          shadow-normalBias={0.05} 
       >
           <perspectiveCamera attach='shadow-camera' fov={90} near={0.1} far={5000} />
       </animated.spotLight>

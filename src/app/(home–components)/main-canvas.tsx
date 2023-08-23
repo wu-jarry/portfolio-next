@@ -16,33 +16,56 @@ const calcRotation = (clientX: number) => ((clientX - window.innerWidth / 2) * 0
 const interpolateRotation = (rotateY: number) => [0, rotateY, 0] as const;
 
 interface CameraMoveAnimationProps {
-  objectClicked: boolean;
+  monitorClicked: boolean;
+  mailboxClicked: boolean;
+  bottleClicked: boolean;
 }
 
-const CameraMoveAnimation: React.FC<CameraMoveAnimationProps> = ({ objectClicked }) => {
+const CameraMoveAnimation: React.FC<CameraMoveAnimationProps> = ({ monitorClicked, mailboxClicked, bottleClicked }) => {
   const { camera } = useThree();
+  const defaultZoom = 250;
+  const defaultPosition = new Vector3(2, 1.88, 2);
+  const defaultLookAt = new Vector3(0, 0.2, -0.1)
+
+  const monitorZoom = 1800;
+  const monitorPosition = new Vector3(9, 2, 0.2);
+  const monitorLookAt = new Vector3(0, 0, 0.3);
+
+  const mailboxZoom = 950;
+  const mailboxPosition = new Vector3(10, 8, 30);
+  const mailboxLookAt = new Vector3(0, -0.6, 0);
+
+  const bottleZoom = 1500;
+  const bottlePosition = new Vector3(15, 10, 30);
+  const bottleLookAt = new Vector3(0, 0.5, 0);
+
 
   useFrame(() => {
-    if (objectClicked) {
-      const newLookAt = new THREE.Object3D();
-      newLookAt.position.copy(new THREE.Vector3(0, 0, 0).lerp(new THREE.Vector3(-1, -0.15, 0.35), 1));
-      // console.log(newLookAt.position)
-      
-      camera.zoom = lerp(camera.zoom, 1800, 0.05); // Adjust the second parameter for speed
-      camera.position.lerp(new Vector3(9, 2, 0.2), 0.05); // Adjust the second parameter for speed
-      camera.lookAt(0, 0, 0.3);
+    if (monitorClicked) {
+      camera.zoom = lerp(camera.zoom, monitorZoom, 0.05); // Adjust the second parameter for speed
+      camera.position.lerp(monitorPosition, 0.05); // Adjust the second parameter for speed
+      camera.lookAt(monitorLookAt);
       camera.updateProjectionMatrix();
     }
-    else if (!objectClicked) {
+    else if (mailboxClicked) {
+      camera.zoom = lerp(camera.zoom, mailboxZoom, 0.05); // Adjust the second parameter for speed
+      camera.position.lerp(mailboxPosition, 0.05); // Adjust the second parameter for speed
+      camera.lookAt(mailboxLookAt);
+      camera.updateProjectionMatrix();
+    }
+    else if (bottleClicked) {
+      camera.zoom = lerp(camera.zoom, bottleZoom, 0.05); // Adjust the second parameter for speed
+      camera.position.lerp(bottlePosition, 0.05); // Adjust the second parameter for speed
+      camera.lookAt(bottleLookAt);
+      camera.updateProjectionMatrix();
+    }
+    else {
       const targetQuaternion = new THREE.Quaternion().setFromEuler(new Euler(-Math.PI/6, Math.PI/4, 0, 'YXZ'));
-
-      const newLookAt = new THREE.Object3D();
-      // console.log(newLookAt.position)
       
-      camera.zoom = lerp(camera.zoom, 250, 0.1); // Adjust the second parameter for speed
-      camera.position.lerp(new Vector3(2, 1.88, 2), 0.1); // Adjust the second parameter for speed
-      camera.quaternion.slerp(targetQuaternion, 0.1);
-      camera.lookAt(0, 0.2, -0.1);
+      camera.zoom = lerp(camera.zoom, defaultZoom, 0.3); // Adjust the second parameter for speed
+      camera.position.lerp(defaultPosition, 0.3); // Adjust the second parameter for speed
+      camera.quaternion.slerp(targetQuaternion, 0.3);
+      camera.lookAt(defaultLookAt);
       camera.updateProjectionMatrix();
     }
   });
@@ -52,6 +75,9 @@ const CameraMoveAnimation: React.FC<CameraMoveAnimationProps> = ({ objectClicked
 
 export const MainCanvas = () => {
   const [objectClicked, setObjectClicked] = useState(false);
+  const [monitorClicked, setMonitorClicked] = useState(false);
+  const [mailboxClicked, setMailboxClicked] = useState(false);
+  const [bottleClicked, setBottleClicked] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { aspectRatio } = useContainerDimensions(containerRef);
   const orbitControlsRef = useRef<any>();
@@ -63,9 +89,7 @@ export const MainCanvas = () => {
   const [cameraZoom, setCameraZoom] = useState(250);
   const [cameraDisplacement, setCameraDisplacement] = useState(0);
 
-  const checkObjectClicked = () => {
-    setObjectClicked(!objectClicked);
-  }
+  const text = "Hello World";
 
   const [props, set] = useSpring(() => ({
     rotateY: 0,
@@ -94,16 +118,27 @@ export const MainCanvas = () => {
         <HemisphereLightSource/>
         <RoomModel 
           {...{ }}
-          onAnyObjectClicked={checkObjectClicked}
+          onMonitorClicked={() => { setObjectClicked(!objectClicked); setMonitorClicked(!monitorClicked); }}
+          onMailboxClicked={() => { setObjectClicked(!objectClicked); setMailboxClicked(!mailboxClicked); }}
+          onBottleClicked={() => { setObjectClicked(!objectClicked); setBottleClicked(!bottleClicked);}}
           rotation={objectClicked ? [0, 0, 0] : props.rotateY.to(interpolateRotation) as unknown as [number, number, number]}
           position={[-0.1, -0.7, 0]}
           scale={[0.11, 0.11, 0.11]}
         />
-        <CameraMoveAnimation objectClicked={objectClicked}/>
+        <CameraMoveAnimation monitorClicked={monitorClicked} mailboxClicked={mailboxClicked} bottleClicked={bottleClicked}/>
         {/* <OrbitControls
           ref={orbitControlsRef}
-          position = {cameraPosition}
+          position = {new Vector3(2, 1.88, 2)}
         /> */}
+         {/* <Html>
+          <div className="letter-container" style={{ width: '100%', whiteSpace: 'nowrap', }}>
+            {text.split('&nbsp;').map((letter, index) => (
+              <div key={index} className="letter" style={{ ...props, animationDelay: `${index * 0.1}s`, display: 'flex' }}>
+                {letter}
+              </div>
+            ))}
+          </div>
+        </Html> */}
       </Canvas>
     </div>
   )
