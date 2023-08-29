@@ -16,7 +16,6 @@ import { LampLightSource } from "./lights";
 import { timeStamp } from "console";
 import { finished } from 'stream';
 import { RectAreaLightSource, MonitorSpotLightSource, MailboxSpotLightSource, BottleSpotLightSource } from '@/app/(home–components)/(room)/lights'; // Import RectAreaLightSource
-import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
 
 
 type GLTFResult = GLTF & {
@@ -354,13 +353,20 @@ function VideoMaterial({ url, ...props }: { url: string } & MeshBasicMaterialPro
   return <meshBasicMaterial map={texture}  {...props}/>
 }
 
+function ImageMaterial({ url }: { url: string } & MeshBasicMaterialProps) {
+  const texture = useMemo(() => new THREE.TextureLoader().load(url), [url]);
+  texture.flipY = false; // Depending on your image's orientation
+  return <meshBasicMaterial map={texture}/>;
+}
+
 type RoomModelProps = ComponentProps<typeof animated.group> & {
     onMonitorClicked: (state: boolean) => void;
     onMailboxClicked: (state: boolean) => void;
     onBottleClicked: (state: boolean) => void;
+    onAnimationsFinished: (state: boolean) => void;
   }
 
-export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked, ...props }: RoomModelProps) {
+export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked, onAnimationsFinished, ...props }: RoomModelProps) {
   const group = useRef<Group>(null);
   const { nodes, materials, animations } = useGLTF("/models/website ver2.glb") as GLTFResult;
   const { actions, mixer } = useAnimations(animations, group);
@@ -421,6 +427,13 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
           duration: 400
       }
   }), [animationsFinished]);
+
+  const downloadResumeOnClick = () => {
+    const downloadLink = document.createElement("a");
+    downloadLink.href = '/textures/Wu_Jarry - Resume.pdf';
+    downloadLink.download = 'Wu_Jarry - Resume.pdf';
+    downloadLink.click();
+  };
   
   useEffect(() => {
     const bounceInterval = setInterval(() => {
@@ -463,6 +476,7 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
       
       if(actionsList.length === Object.keys(actions).length-2){
         setAnimationsFinished(true);
+        onAnimationsFinished(true);
       }
     });
   }, [actions, mixer, animationStartClick]);
@@ -517,7 +531,6 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
               style={{
                 transition: '0.5s', 
                 opacity: animationStartClick ? 0 : 1, 
-                // transform: `scale(${animationStartClick ? 0 : 1})`
               }}
             >
               <div className="cover-cube-arrow-text center-text" style={{whiteSpace: 'nowrap'}}>
@@ -538,9 +551,14 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
             <primitive object={nodes.Mother_bone} />
           </group>
           <group name="Computer" position={[33.668, 5.176, 3.196]} scale={0}>
+            <Html>
+              <div className="monitor-go-back" onClick={() => {setMonitorClick(false); onMonitorClicked(false);}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', transform: `scale(${monitorClick ? 1 : 0})`, transition: monitorClick ? 'transform 0s ease-in-out 2s' : `none`,}}>
+                 {'<'}- Go back
+              </div>
+            </Html>
             <MonitorSpotLightSource intensity={lightOnSpringProps.monitorLightIntensity}/>
             {/* @ts-ignore */}
-            <animated.mesh name='Computer' onClick={() => {setMonitorClick(!monitorClick); setIsMonitorHovered(false); onMonitorClicked();}} onPointerOver={() => {if(!monitorClick){setIsMonitorHovered(true);}}} onPointerOut={() => {if(!monitorClick){setIsMonitorHovered(false);}}} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
+            <animated.mesh name='Computer' onClick={() => {setMonitorClick(true); setIsMonitorHovered(false); if(!monitorClick){onMonitorClicked();}}} onPointerOver={() => {if(!monitorClick){setIsMonitorHovered(true);}}} onPointerOut={() => {if(!monitorClick){setIsMonitorHovered(false);}}} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
               <mesh
                 name="Cube014"
                 // castShadow
@@ -558,9 +576,11 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                   <Suspense fallback={
                     <meshBasicMaterial
                       map={materials["Monitor screen"].map}
+                      color={'black'}
                     />}
                   >
-                    <VideoMaterial url="/textures/just-ken.mp4"/>
+                    {monitorClick ? (<ImageMaterial url="/textures/About-me.png"/>) : (<VideoMaterial url="/textures/just-ken.mp4"/>)}
+                    {/* <VideoMaterial url= {monitorClick ? "none" : "/textures/just-ken.mp4"}/> */}
                   </Suspense>
                 </animated.mesh>
               <Html position={[0, 2.4 + arrowBounce, 0.6]}
@@ -1110,9 +1130,9 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
               geometry={nodes.Cylinder021_2.geometry}
               material={materials["Desk top.001"]}
             />
-             <Html position={[1.2, 2.7 + arrowBounce, 0.8]} rotation={[-Math.PI/4, -Math.PI/4, -Math.PI/4]}
+             <Html position={[1.2, 2.7 + arrowBounce, 0.8]}
                 style={{
-                  transition: '0.5s', 
+                  transition: '0.2s', 
                   opacity: animationsFinished ? 1 : 0,
                   transform: `scale(${mailboxClick ? 0 : 1})`
                 }}

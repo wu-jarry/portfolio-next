@@ -9,8 +9,8 @@ import { AmbientLight, Camera, DirectionalLight, Euler, OrthographicCamera, Rayc
 import { SunlightSource, LampLightSource, RectAreaLightSource, HemisphereLightSource } from '@/app/(home–components)/(room)/lights'
 import { SetFloor } from '@/app/(home–components)/floor'
 import { useSpring, config } from '@react-spring/three'
-import { animated, AnimatedComponent } from '@react-spring/three'
 import { lerp } from 'three/src/math/MathUtils'
+import { transform } from 'typescript'
 
 const calcRotation = (clientX: number) => ((clientX - window.innerWidth / 2) * 0.2) / window.innerWidth;
 const interpolateRotation = (rotateY: number) => [0, rotateY, 0] as const;
@@ -27,9 +27,9 @@ const CameraMoveAnimation: React.FC<CameraMoveAnimationProps> = ({ monitorClicke
   const defaultPosition = new Vector3(2, 1.88, 2);
   const defaultLookAt = new Vector3(0, 0.2, -0.1)
 
-  const monitorZoom = 1800;
-  const monitorPosition = new Vector3(9, 2, 0.2);
-  const monitorLookAt = new Vector3(0, 0, 0.3);
+  const monitorZoom = 3000;
+  const monitorPosition = new Vector3(9, 2, 1);
+  const monitorLookAt = new Vector3(0, 0.03, 0.405);
 
   const mailboxZoom = 950;
   const mailboxPosition = new Vector3(10, 8, 30);
@@ -74,6 +74,8 @@ const CameraMoveAnimation: React.FC<CameraMoveAnimationProps> = ({ monitorClicke
 };
 
 export const MainCanvas = () => {
+  const [animationsFinishedCanvas, setAnimationsFinishedCanvas] = useState(false);
+
   const [objectClicked, setObjectClicked] = useState(false);
   const [monitorClicked, setMonitorClicked] = useState(false);
   const [mailboxClicked, setMailboxClicked] = useState(false);
@@ -89,7 +91,8 @@ export const MainCanvas = () => {
   const [cameraZoom, setCameraZoom] = useState(250);
   const [cameraDisplacement, setCameraDisplacement] = useState(0);
 
-  const text = "Hello World";
+  const welcomeTitle = "Jarry's Room";
+  const animationDelayTime = 0.09
 
   const [props, set] = useSpring(() => ({
     rotateY: 0,
@@ -121,6 +124,7 @@ export const MainCanvas = () => {
           onMonitorClicked={() => { setObjectClicked(!objectClicked); setMonitorClicked(!monitorClicked); }}
           onMailboxClicked={() => { setObjectClicked(!objectClicked); setMailboxClicked(!mailboxClicked); }}
           onBottleClicked={() => { setObjectClicked(!objectClicked); setBottleClicked(!bottleClicked);}}
+          onAnimationsFinished={() => {setAnimationsFinishedCanvas(true);}}
           rotation={objectClicked ? [0, 0, 0] : props.rotateY.to(interpolateRotation) as unknown as [number, number, number]}
           position={[-0.1, -0.7, 0]}
           scale={[0.11, 0.11, 0.11]}
@@ -130,15 +134,35 @@ export const MainCanvas = () => {
           ref={orbitControlsRef}
           position = {new Vector3(2, 1.88, 2)}
         /> */}
-         {/* <Html>
+         <Html>
           <div className="letter-container" style={{ width: '100%', whiteSpace: 'nowrap', }}>
-            {text.split('&nbsp;').map((letter, index) => (
-              <div key={index} className="letter" style={{ ...props, animationDelay: `${index * 0.1}s`, display: 'flex' }}>
+            {welcomeTitle.split('').map((letter, index) => (
+              <span 
+                key={index} 
+                className="letter" 
+                style={{ 
+                  ...props, 
+                  animation: animationsFinishedCanvas ? `titleAnimation 0.8s ease-in-out forwards ${index * animationDelayTime}s` : 'none', 
+                  transition: objectClicked ? 'none' : 'opacity 0.8s ease-in-out',
+                  opacity: objectClicked ? 0 : 1 
+                }}
+              >
                 {letter}
-              </div>
+              </span>
             ))}
           </div>
-        </Html> */}
+            <div 
+              className="letter-container subtitle" 
+              style={{
+                animation: animationsFinishedCanvas ? `subtitleAnimation 0.8s ease-in-out forwards` : 'none',
+                animationDelay: animationsFinishedCanvas ? `${welcomeTitle.length * animationDelayTime}s` : 'none',
+                transition: objectClicked ? 'none' : `transform 0s ease-in-out 0.3s`,
+                transform: `scale(${objectClicked ? 0 : 1})`,
+              }}
+            >
+              Welcome to my portfolio!
+            </div>
+        </Html>
       </Canvas>
     </div>
   )
