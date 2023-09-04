@@ -103,3 +103,39 @@ body {
   right: 850%;
   bottom: 275px;
 }
+
+/* .room-portfolio-image, .ai-bartender-image, .feas-image, .room-portfolio-v1-image{
+  position: relative;
+  max-width: 225%;
+  max-height: 225%;
+  display: flex;
+} */
+
+.skills-image-container{
+  position: relative;
+  display: flex;
+  max-width: 225%;
+  max-height: 225%;
+  right: 433%;
+  bottom: 60px;
+}
+
+.room-portfolio-image{
+  right: 830%;
+  bottom: 60px;
+}
+
+.ai-bartender-image{
+  right: 830%;
+  bottom: 100px;
+}
+
+.feas-image{
+  right: 830%;
+  bottom: 60px;
+}
+
+.room-portfolio-v1-image{
+  right: 830%;
+  bottom: 60px;
+}

@@ -28,8 +28,8 @@ const CameraMoveAnimation: React.FC<CameraMoveAnimationProps> = ({ monitorClicke
   const defaultLookAt = new Vector3(0, 0.2, -0.1)
 
   const monitorZoom = 3000;
-  const monitorPosition = new Vector3(9, 2, 1);
-  const monitorLookAt = new Vector3(0, 0.03, 0.405);
+  const monitorPosition = new Vector3(10, 2, 0.5);
+  const monitorLookAt = new Vector3(0, 0.02, 0.363);
 
   const mailboxZoom = 950;
   const mailboxPosition = new Vector3(10, 8, 30);

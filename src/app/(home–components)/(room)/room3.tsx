@@ -388,11 +388,11 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
   const arrowBounceRef = useRef(0);
 
   const [coverCubeSpringProps] = useSpring(() => ({
-    scale: isCoverHovered ? coverCubeScale * 1.03 : coverCubeScale,
+    scale: isCoverHovered ? coverCubeScale * 1.03 + arrowBounce : coverCubeScale,
     config: {
       duration: 400
     },
-  }), [coverCubeScale, isCoverHovered, isMonitorHovered]);
+  }), [coverCubeScale, isCoverHovered, isMonitorHovered, arrowBounce]);
 
   const [monitorSpringProps] = useSpring(() => ({
     monitorScale: isMonitorHovered ? 1.1 + (arrowBounce * 0.2) : 1,
@@ -524,7 +524,7 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
             material={materials.Walls}
             position={[0.553, 8.419, -0.133]}
             rotation={[0, 0, -Math.PI / 2]}
-            scale={coverCubeSpringProps.scale}
+            scale={animationStartClick ? 0 : coverCubeSpringProps.scale}
           />
           <mesh>
             <Html position={[0, 20 + arrowBounce, 0]}
@@ -555,8 +555,17 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
               <div className="monitor-go-back" onClick={() => {setMonitorClick(false); onMonitorClicked(false);}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', transform: `scale(${monitorClick ? 1 : 0})`, transition: monitorClick ? 'transform 0s ease-in-out 2s' : `none`,}}>
                  {'<'}- Go back
               </div>
+                <img className='room-portfolio-image skills-image-container' src='/textures/room-portfolio.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
+                <img className='ai-bartender-image skills-image-container' src='/textures/ai-bartender.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
+                <img className='feas-image skills-image-container' src='/textures/feas.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
+                <img className='room-portfolio-v1-image skills-image-container' src='/textures/room-portfolio-v1.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
             </Html>
-            <MonitorSpotLightSource intensity={lightOnSpringProps.monitorLightIntensity}/>
+            {/* <Html>
+              <div className="monitor-go-back" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', transform: `scale(${monitorClick ? 1 : 0})`, transition: monitorClick ? 'transform 0s ease-in-out 2s' : `none`,}}>
+                 {'<'}- Go back
+              </div>
+            </Html> */}
+            <MonitorSpotLightSource intensity={monitorClick ? 0 : lightOnSpringProps.monitorLightIntensity}/>
             {/* @ts-ignore */}
             <animated.mesh name='Computer' onClick={() => {setMonitorClick(true); setIsMonitorHovered(false); if(!monitorClick){onMonitorClicked();}}} onPointerOver={() => {if(!monitorClick){setIsMonitorHovered(true);}}} onPointerOut={() => {if(!monitorClick){setIsMonitorHovered(false);}}} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
               <mesh
@@ -579,8 +588,7 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                       color={'black'}
                     />}
                   >
-                    {monitorClick ? (<ImageMaterial url="/textures/About-me.png"/>) : (<VideoMaterial url="/textures/just-ken.mp4"/>)}
-                    {/* <VideoMaterial url= {monitorClick ? "none" : "/textures/just-ken.mp4"}/> */}
+                    {monitorClick ? (<ImageMaterial url="/textures/skills.png"/>) : (<VideoMaterial url="/textures/just-ken.mp4"/>)}
                   </Suspense>
                 </animated.mesh>
               <Html position={[0, 2.4 + arrowBounce, 0.6]}
@@ -595,6 +603,10 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                 </svg>
               </Html>
             </animated.mesh>
+            {/* <Html>
+              <img className='skills-image' src='/textures/skills.png'></img>
+              <div>HELLO</div>
+            </Html> */}
           </group>
           <group name="Garbage_can" position={[36.001, 2.336, 5.841]} scale={0}>
             <mesh
@@ -1106,7 +1118,7 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
             scale={0}
           />
           <group name="Mailbox" position={[5.322, 1.002, 10.081]} scale={0}>
-            <MailboxSpotLightSource intensity={lightOnSpringProps.mailboxLightIntensity}/>
+            <MailboxSpotLightSource intensity={mailboxClick ? 0 : lightOnSpringProps.mailboxLightIntensity}/>
             {/* @ts-ignore */}
             <animated.mesh name='Mailbox' onClick={() => {setMailboxClick(!mailboxClick); setIsMailboxHovered(false); onMailboxClicked();}} onPointerOver={() => {if(!mailboxClick){setIsMailboxHovered(true)}}} onPointerOut={() => {if(!monitorClick){setIsMailboxHovered(false)}}} scale={mailboxSpringProps.mailboxScale}>
             <mesh
@@ -1827,7 +1839,7 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                 geometry={nodes.Cylinder010_1.geometry}
                 material={materials["Bottle cap"]}
                 />
-                <BottleSpotLightSource intensity={lightOnSpringProps.bottleLightIntensity}/>
+                <BottleSpotLightSource intensity={bottleClick ? 0 : lightOnSpringProps.bottleLightIntensity}/>
             </group>
             <group name="Bottle002" position={[-2.096, 33.901, -6.695]} scale={0}>
               <mesh
