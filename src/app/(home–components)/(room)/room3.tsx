@@ -552,19 +552,27 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
           </group>
           <group name="Computer" position={[33.668, 5.176, 3.196]} scale={0}>
             <Html>
-              <div className="monitor-go-back" onClick={() => {setMonitorClick(false); onMonitorClicked(false);}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', transform: `scale(${monitorClick ? 1 : 0})`, transition: monitorClick ? 'transform 0s ease-in-out 2s' : `none`,}}>
+              <div className="monitor-go-back" onClick={() => {setMonitorClick(false); onMonitorClicked(false);}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: 0}}>
                  {'<'}- Go back
               </div>
-                <img className='room-portfolio-image skills-image-container' src='/textures/room-portfolio.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
-                <img className='ai-bartender-image skills-image-container' src='/textures/ai-bartender.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
-                <img className='feas-image skills-image-container' src='/textures/feas.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
-                <img className='room-portfolio-v1-image skills-image-container' src='/textures/room-portfolio-v1.png' style={{ cursor: 'pointer', opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
+                <img className='room-portfolio-image skills-image-container' src='/textures/room-portfolio.png' style={{ cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
+                <img className='ai-bartender-image skills-image-container' src='/textures/ai-bartender.png' style={{ cursor: 'pointer', scale: monitorClick ? 0.86 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2.3s' : `none`}}></img>
+                <img className='feas-image skills-image-container' src='/textures/feas.png' style={{ cursor: 'pointer', scale: monitorClick ? 1.01 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2.6s' : `none`}}></img>
+                <img className='room-portfolio-v1-image skills-image-container' src='/textures/room-portfolio-v1.png' style={{ cursor: 'pointer', scale: monitorClick ? 1.02 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2.9s' : `none`}}></img>
             </Html>
-            {/* <Html>
-              <div className="monitor-go-back" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', transform: `scale(${monitorClick ? 1 : 0})`, transition: monitorClick ? 'transform 0s ease-in-out 2s' : `none`,}}>
-                 {'<'}- Go back
+            <Html>
+              <strong>
+              <div className="about-me-text subtitle-text" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
+                 About Me : {')'}
               </div>
-            </Html> */}
+              <div className="my-skills-text subtitle-text" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
+                 My Skills
+              </div>
+              <div className="experiences-text subtitle-text" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
+                 Experiences
+              </div>
+              </strong>
+            </Html>
             <MonitorSpotLightSource intensity={monitorClick ? 0 : lightOnSpringProps.monitorLightIntensity}/>
             {/* @ts-ignore */}
             <animated.mesh name='Computer' onClick={() => {setMonitorClick(true); setIsMonitorHovered(false); if(!monitorClick){onMonitorClicked();}}} onPointerOver={() => {if(!monitorClick){setIsMonitorHovered(true);}}} onPointerOut={() => {if(!monitorClick){setIsMonitorHovered(false);}}} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
@@ -603,10 +611,6 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                 </svg>
               </Html>
             </animated.mesh>
-            {/* <Html>
-              <img className='skills-image' src='/textures/skills.png'></img>
-              <div>HELLO</div>
-            </Html> */}
           </group>
           <group name="Garbage_can" position={[36.001, 2.336, 5.841]} scale={0}>
             <mesh
