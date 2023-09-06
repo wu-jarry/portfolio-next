@@ -605,7 +605,7 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                     />}
                   >
                     {/* <ImageMaterial url="/textures/skills.png"/> */}
-                    {monitorClick ? (aboutMeState ? (<ImageMaterial url="/textures/about-me.png"/>) : skillsState ? (<ImageMaterial url="/textures/skills.png"/>) : experienceState ? (<ImageMaterial url='/textures/experiences.png'/>) : 'null') : (<VideoMaterial url="/textures/just-ken.mp4"/>)}
+                    {monitorClick ? (aboutMeState ? (<ImageMaterial url="/textures/About-me.png"/>) : skillsState ? (<ImageMaterial url="/textures/skills.png"/>) : experienceState ? (<ImageMaterial url='/textures/experiences.png'/>) : 'null') : (<VideoMaterial url="/textures/just-ken.mp4"/>)}
                   </Suspense>
                 </animated.mesh>
               <Html position={[0, 2.4 + arrowBounce, 0.6]}
