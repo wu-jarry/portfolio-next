@@ -387,6 +387,12 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
   const [arrowBounce, setArrowBounce] = useState(0);
   const arrowBounceRef = useRef(0);
 
+  const [aboutMeState, setAboutMeState] = useState(false);
+  const [skillsState, setSkillsState] = useState(false);
+  const [experienceState, setExperienceState] = useState(false);
+
+  const [wrapperVisible, setWrapperVisible] = useState(false);
+
   const [coverCubeSpringProps] = useSpring(() => ({
     scale: isCoverHovered ? coverCubeScale * 1.03 + arrowBounce : coverCubeScale,
     config: {
@@ -552,30 +558,32 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
           </group>
           <group name="Computer" position={[33.668, 5.176, 3.196]} scale={0}>
             <Html>
-              <div className="monitor-go-back" onClick={() => {setMonitorClick(false); onMonitorClicked(false);}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: 0}}>
+              <div className="monitor-go-back" onClick={() => {setMonitorClick(false); onMonitorClicked(false); setAboutMeState(false); setSkillsState(false); setExperienceState(false);}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: 0}}>
                  {'<'}- Go back
               </div>
-                <img className='room-portfolio-image skills-image-container' src='/textures/room-portfolio.png' style={{ cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2s' : `none`}}></img>
-                <img className='ai-bartender-image skills-image-container' src='/textures/ai-bartender.png' style={{ cursor: 'pointer', scale: monitorClick ? 0.86 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2.3s' : `none`}}></img>
-                <img className='feas-image skills-image-container' src='/textures/feas.png' style={{ cursor: 'pointer', scale: monitorClick ? 1.01 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2.6s' : `none`}}></img>
-                <img className='room-portfolio-v1-image skills-image-container' src='/textures/room-portfolio-v1.png' style={{ cursor: 'pointer', scale: monitorClick ? 1.02 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 2.9s' : `none`}}></img>
+                <img className='room-portfolio-image skills-image-container' src='/textures/room-portfolio.png' style={{ cursor: 'pointer', scale: skillsState ? 1 : 0, opacity: skillsState ? 1 : 0, transition: skillsState ? 'opacity 0.5s ease-in-out 0.5s' : `none`}}/>
+                <img className='ai-bartender-image skills-image-container' src='/textures/ai-bartender.png' style={{ cursor: 'pointer', scale: skillsState ? 0.86 : 0, opacity: skillsState ? 1 : 0, transition: skillsState ? 'opacity 0.5s ease-in-out 0.7s' : `none`}}/>
+                <img className='feas-image skills-image-container' src='/textures/feas.png' style={{ cursor: 'pointer', scale: skillsState ? 1.01 : 0, opacity: skillsState ? 1 : 0, transition: skillsState ? 'opacity 0.5s ease-in-out 0.9s' : `none`}}/>
+                <img className='room-portfolio-v1-image skills-image-container' src='/textures/room-portfolio-v1.png' style={{ cursor: 'pointer', scale: skillsState ? 1.02 : 0, opacity: skillsState ? 1 : 0, transition: skillsState ? 'opacity 0.5s ease-in-out 1.1s' : `none`}}/>
+                <img className='resume-holder skills-image-container' src='/textures/resume-holder.png' onClick={() => {downloadResumeOnClick()}} style={{ cursor: 'pointer', scale: experienceState ? 1.49 : 0, opacity: experienceState ? 1 : 0, transition: experienceState ? 'opacity 0.5s ease-in-out 0.2s' : `none`}}/>
+                <img className='resume-icon skills-image-container' src='/textures/resume-icon.png' onClick={() => {downloadResumeOnClick()}} style={{ cursor: 'pointer', scale: experienceState ? 1.49 : 0, opacity: experienceState ? 1 : 0, transition: experienceState ? 'opacity 0.5s ease-in-out 0.2s' : `none`}}/>
             </Html>
             <Html>
               <strong>
-              <div className="about-me-text subtitle-text" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
-                 About Me : {')'}
-              </div>
-              <div className="my-skills-text subtitle-text" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
-                 My Skills
-              </div>
-              <div className="experiences-text subtitle-text" style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
-                 Experiences
-              </div>
+                <div className="about-me-text subtitle-text" onClick={() => {setAboutMeState(true); setSkillsState(false); setExperienceState(false)}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
+                  About Me : {')'}
+                </div>
+                <div className="my-skills-text subtitle-text" onClick={() => {setSkillsState(true); setAboutMeState(false); setExperienceState(false)}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
+                  My Skills
+                </div>
+                <div className="experiences-text subtitle-text" onClick={() => {setExperienceState(true); setAboutMeState(false); setSkillsState(false)}} style={{ width: '100%', whiteSpace: 'nowrap',  cursor: 'pointer', scale: monitorClick ? 1 : 0, opacity: monitorClick ? 1 : 0, transition: monitorClick ? 'opacity 0.5s ease-in-out 3s' : `none`}}>
+                  Experiences
+                </div>
               </strong>
             </Html>
             <MonitorSpotLightSource intensity={monitorClick ? 0 : lightOnSpringProps.monitorLightIntensity}/>
             {/* @ts-ignore */}
-            <animated.mesh name='Computer' onClick={() => {setMonitorClick(true); setIsMonitorHovered(false); if(!monitorClick){onMonitorClicked();}}} onPointerOver={() => {if(!monitorClick){setIsMonitorHovered(true);}}} onPointerOut={() => {if(!monitorClick){setIsMonitorHovered(false);}}} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
+            <animated.mesh name='Computer' onClick={() => {if(!monitorClick){setMonitorClick(true); setIsMonitorHovered(false); setAboutMeState(true); onMonitorClicked();}}} onPointerOver={() => {if(!monitorClick){setIsMonitorHovered(true);}}} onPointerOut={() => {if(!monitorClick){setIsMonitorHovered(false);}}} scale={monitorSpringProps.monitorScale} position={monitorSpringProps.monitorPosition}>
               <mesh
                 name="Cube014"
                 // castShadow
@@ -596,7 +604,8 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                       color={'black'}
                     />}
                   >
-                    {monitorClick ? (<ImageMaterial url="/textures/skills.png"/>) : (<VideoMaterial url="/textures/just-ken.mp4"/>)}
+                    {/* <ImageMaterial url="/textures/skills.png"/> */}
+                    {monitorClick ? (aboutMeState ? (<ImageMaterial url="/textures/about-me.png"/>) : skillsState ? (<ImageMaterial url="/textures/skills.png"/>) : experienceState ? (<ImageMaterial url='/textures/experiences.png'/>) : 'null') : (<VideoMaterial url="/textures/just-ken.mp4"/>)}
                   </Suspense>
                 </animated.mesh>
               <Html position={[0, 2.4 + arrowBounce, 0.6]}
@@ -1800,7 +1809,7 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
               material={materials.Dirt}
             />
           </group>
-          <animated.group name="Bottle group" onClick={() => {setBottleClick(!bottleClick); setIsBottleHovered(false); onBottleClicked(bottleClick);}} onPointerOver={() => {if(!bottleClick){setIsBottleHovered(true);}}} onPointerOut={() => {if(!bottleClick){setIsBottleHovered(false)}}} position={bottleSpringProps.bottlePosition}>
+          <animated.group name="Bottle group" onClick={() => {setBottleClick(!bottleClick); setIsBottleHovered(false); onBottleClicked(bottleClick); setWrapperVisible(!wrapperVisible);}} onPointerOver={() => {if(!bottleClick){setIsBottleHovered(true);}}} onPointerOut={() => {if(!bottleClick){setIsBottleHovered(false)}}} position={bottleSpringProps.bottlePosition}>
             <group name="Bottle" position={[-3.428, 33.9, -6.738]} scale={0}>
               <mesh
                 name="Cylinder009"
@@ -1836,6 +1845,14 @@ export function RoomModel({ onMonitorClicked, onMailboxClicked, onBottleClicked,
                   <path d="M480-362q-8 0-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-373q-6 6-13 8.5t-15 2.5Z"/>
                 </svg>
               </Html>
+              {/* <Html>
+                {wrapperVisible && (
+                  <div className="white-wrapper">
+                    <input type="text" placeholder="Type here..." />
+                    <div className="response-area">Response will appear here</div>
+                  </div>
+                )}
+              </Html> */}
               <mesh
                 name="Cylinder010_1"
                 castShadow
